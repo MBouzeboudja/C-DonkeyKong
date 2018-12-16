@@ -31,7 +31,12 @@ Game::Game()
 		for (int j = 0; j < BLOCK_COUNT_Y; j++)
 		{
 			_Block[i][j].setTexture(_TextureBlock);
-			_Block[i][j].setPosition(100.f + 70.f * (i + 1), 0.f + BLOCK_SPACE * (j + 1));
+			if (j % 2 == 0) {
+				_Block[i][j].setPosition(100.f + 70.f * (i + 1), 0.f + BLOCK_SPACE * (j + 1) + i * 2.f);
+			}
+			else {
+				_Block[i][j].setPosition(170.f + 70.f * (i + 1), 0.f + BLOCK_SPACE * (j + 1) - i * 2.f);
+			}
 
 			std::shared_ptr<Entity> se = std::make_shared<Entity>();
 			se->m_sprite = _Block[i][j];
