@@ -32,10 +32,10 @@ Game::Game()
 		{
 			_Block[i][j].setTexture(_TextureBlock);
 			if (j % 2 == 0) {
-				_Block[i][j].setPosition(100.f + 70.f * (i + 1), -20.f + BLOCK_SPACE * (j + 1) + i * 3.f);
+				_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
 			}
 			else {
-				_Block[i][j].setPosition(170.f + 70.f * (i + 1), 0.f + BLOCK_SPACE * (j + 1) - i * 3.f);
+				_Block[i][j].setPosition(170.f + 70.f * (i + 1), +10.f + BLOCK_SPACE * (j + 1) - i * 3.f);
 			}
 
 			std::shared_ptr<Entity> se = std::make_shared<Entity>();
@@ -55,9 +55,9 @@ Game::Game()
 	{
 		_Echelle[i].setTexture(_TextureEchelle);
 		if(i%2==0)
-			_Echelle[i].setPosition(450.f + 70.f, -3.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
+			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
 		else
-			_Echelle[i].setPosition(310.f + 70.f, -4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y);
+			_Echelle[i].setPosition(310.f ,4.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Echelle[i];
