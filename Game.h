@@ -39,11 +39,19 @@ private:
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
+
 	sf::Texture	_TextureBlock;
 	sf::Sprite	_Block[BLOCK_COUNT_X][BLOCK_COUNT_Y];
+
 	sf::Texture	_TextureWeapon;
 	sf::Sprite	_Weapon;
 	sf::Vector2u _sizeBlock;
 	sf::Vector2u _sizeMario;
+
+	sf::Texture _TextureKong;
+	sf::Sprite	_Kong;
+	sf::Font	_FontKong;
+	sf::Vector2u _sizeKong;
+
 };
 

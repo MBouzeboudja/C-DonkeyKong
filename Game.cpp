@@ -32,7 +32,12 @@ Game::Game()
 		{
 			_Block[i][j].setTexture(_TextureBlock);
 			if (j % 2 == 0) {
-				_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
+				if (j == 0 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 0.f + 100.f * (j + 1));
+				else
+				{
+					_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
+
+				}
 			}
 			else {
 				_Block[i][j].setPosition(170.f + 70.f * (i + 1), +10.f + BLOCK_SPACE * (j + 1) - i * 3.f);
@@ -57,7 +62,7 @@ Game::Game()
 		if(i%2==0)
 			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
 		else
-			_Echelle[i].setPosition(310.f ,4.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
+			_Echelle[i].setPosition(310.f ,3.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Echelle[i];
@@ -66,6 +71,21 @@ Game::Game()
 		se->m_position = _Echelle[i].getPosition();
 		EntityManager::m_Entities.push_back(se);
 	}
+
+	// Draw Kong
+
+	_TextureKong.loadFromFile("Media/Textures/Kong.png"); // Mario_small.png");
+	_sizeKong = _TextureKong.getSize();
+	_Kong.setTexture(_TextureKong);
+
+	_Kong.setPosition(280.f,BLOCK_SPACE - _sizeKong.y);
+
+	std::shared_ptr<Entity> kong = std::make_shared<Entity>();
+	kong->m_sprite = _Kong;
+	kong->m_type = EntityType::Kong;
+	kong->m_size = _TextureKong.getSize();
+	kong->m_position = _Kong.getPosition();
+	EntityManager::m_Entities.push_back(kong);
 
 	// Draw Mario
 
@@ -92,6 +112,8 @@ Game::Game()
 	mStatisticsText.setFont(mFont);
 	mStatisticsText.setPosition(5.f, 5.f);
 	mStatisticsText.setCharacterSize(10);
+
+
 }
 
 void Game::run()
@@ -146,8 +168,10 @@ void Game::update(sf::Time elapsedTime)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft)
 		movement.x -= PlayerSpeed;
-	if (mIsMovingRight)
+	if (mIsMovingRight) 
 		movement.x += PlayerSpeed;
+		
+	
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
@@ -160,7 +184,6 @@ void Game::update(sf::Time elapsedTime)
 		{
 			continue;
 		}
-
 		entity->m_sprite.move(movement * elapsedTime.asSeconds());
 	}
 }
