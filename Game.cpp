@@ -11,6 +11,7 @@ Game::Game()
 	, mTexture()
 	, mPlayer()
 	, mFont()
+	,_Kong()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
 	, mStatisticsNumFrames(0)
@@ -94,7 +95,7 @@ Game::Game()
 	mPlayer.setTexture(mTexture);
 	sf::Vector2f posMario;
 	posMario.x = 100.f + 70.f;
-	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y;
+	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y - 5.f;
 
 	mPlayer.setPosition(posMario);
 
@@ -162,15 +163,20 @@ void Game::processEvents()
 void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
+
 	if (mIsMovingUp)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown)
 		movement.y += PlayerSpeed;
-	if (mIsMovingLeft)
+	if (mIsMovingLeft) {
 		movement.x -= PlayerSpeed;
-	if (mIsMovingRight) 
+		movement.y -= 3.7;
+	}
+	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
-		
+		movement.y += 3.7;
+	}
+
 	
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
@@ -179,12 +185,17 @@ void Game::update(sf::Time elapsedTime)
 		{
 			continue;
 		}
-
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
 		}
-		entity->m_sprite.move(movement * elapsedTime.asSeconds());
+
+		sf::Vector2f mov = entity->m_sprite.getPosition();
+		if (mov.x < 170.f) entity->m_sprite.move(1.f, 0.f);
+		if (mov.x > 690.f) entity->m_sprite.move(-1.f, 0.f);
+		else entity->m_sprite.move(movement * elapsedTime.asSeconds());
+		
+		
 	}
 }
 
