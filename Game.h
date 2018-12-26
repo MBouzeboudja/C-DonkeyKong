@@ -36,6 +36,7 @@ private:
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	bool mIsJump;
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];

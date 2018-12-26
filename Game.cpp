@@ -11,7 +11,6 @@ Game::Game()
 	, mTexture()
 	, mPlayer()
 	, mFont()
-	,_Kong()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
 	, mStatisticsNumFrames(0)
@@ -21,7 +20,7 @@ Game::Game()
 	, mIsMovingLeft(false)
 {
 	mWindow.setFramerateLimit(160);
-
+	mIsJump = false;
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
@@ -170,11 +169,11 @@ void Game::update(sf::Time elapsedTime)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft) {
 		movement.x -= PlayerSpeed;
-		movement.y -= 3.7;
+		movement.y -= 3.8;
 	}
 	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
-		movement.y += 3.7;
+		movement.y += 3.8;
 	}
 
 	
@@ -191,8 +190,14 @@ void Game::update(sf::Time elapsedTime)
 		}
 
 		sf::Vector2f mov = entity->m_sprite.getPosition();
-		if (mov.x < 170.f) entity->m_sprite.move(1.f, 0.f);
-		if (mov.x > 690.f) entity->m_sprite.move(-1.f, 0.f);
+		if (mov.x < 170.f) {
+			entity->m_sprite.move(1.f, 0.f);
+			mIsMovingLeft = false;
+		}
+		if (mov.x > 690.f) {
+			entity->m_sprite.move(-1.f, 0.f);
+			mIsMovingRight = false;
+		}
 		else entity->m_sprite.move(movement * elapsedTime.asSeconds());
 		
 		
@@ -255,5 +260,26 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 	if (key == sf::Keyboard::Space)
 	{
+
+		if (isPressed == false)
+		{
+			EntityManager::GetPlayer()->m_sprite.setPosition(
+			EntityManager::GetPlayer()->m_sprite.getPosition().x,
+			EntityManager::GetPlayer()->m_sprite.getPosition().y + 40.f
+			);
+		}
+
+		if (isPressed == true)
+		{
+			EntityManager::GetPlayer()->m_sprite.setPosition(
+				EntityManager::GetPlayer()->m_sprite.getPosition().x,
+				EntityManager::GetPlayer()->m_sprite.getPosition().y - 40.f
+			);
+			mIsJump = true;
+		}
+		if (mIsJump == true)
+		{
+			return;
+		}
 	}
 }
