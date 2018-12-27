@@ -19,6 +19,7 @@ private:
 
 	void updateStatistics(sf::Time elapsedTime);
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+	void HandlePieceMoves();
 
 private:
 	static const float		PlayerSpeed;
@@ -54,5 +55,7 @@ private:
 	sf::Font	_FontKong;
 	sf::Vector2u _sizeKong;
 
+	sf::Texture _TexturePiece;
+	sf::Sprite	_Piece;
 };
 

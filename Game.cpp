@@ -105,6 +105,20 @@ Game::Game()
 	player->m_position = mPlayer.getPosition();
 	EntityManager::m_Entities.push_back(player);
 
+	//Draw piece
+	_TexturePiece.loadFromFile("Media/Textures/Piece.png"); // Mario_small.png");
+	_Piece.setTexture(_TexturePiece);
+
+	_Piece.setPosition(380.f, BLOCK_SPACE - _TexturePiece.getSize().y);
+
+	std::shared_ptr<Entity> piece = std::make_shared<Entity>();
+	piece->m_sprite = _Piece;
+	piece->m_type = EntityType::piece;
+	piece->m_size = _TexturePiece.getSize();
+	piece->m_position = _Piece.getPosition();
+	EntityManager::m_Entities.push_back(piece);
+
+
 	// Draw Statistic Font 
 
 	mFont.loadFromFile("Media/Sansation.ttf");
@@ -136,6 +150,8 @@ void Game::run()
 		render();
 	}
 }
+
+
 
 void Game::processEvents()
 {
@@ -244,9 +260,51 @@ void Game::updateStatistics(sf::Time elapsedTime)
 	if (mStatisticsUpdateTime >= sf::seconds(0.050f))
 	{
 		// Handle collision weapon enemies
+		HandlePieceMoves();
 	}
 }
+void Game::HandlePieceMoves()
+{
+	//
+	// Handle Enemy moves
+	//
 
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (entity->m_type != EntityType::piece)
+		{
+			continue;
+		}
+
+		float x, y;
+		x = entity->m_sprite.getPosition().x;
+		y = entity->m_sprite.getPosition().y;
+
+		if (entity->m_bLeftToRight == true) {
+			x++;
+			y = y + 0.04;
+		}
+
+		else {
+			x--;
+			y = y - 0.04;
+		}
+
+		if (x >= 710.f) //0)
+		{
+			entity->m_bLeftToRight = false;
+		}
+		if (x < 380.f) {
+			entity->m_bLeftToRight = true;
+		}
+		entity->m_sprite.setPosition(x, y);
+	}
+}
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	if (key == sf::Keyboard::Up)

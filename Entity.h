@@ -6,6 +6,7 @@ enum EntityType
 	block,
 	echelle,
 	Kong,
+	piece,
 };
 
 class Entity
