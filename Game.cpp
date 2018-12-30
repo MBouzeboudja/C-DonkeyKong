@@ -70,6 +70,7 @@ Game::Game()
 		se->m_size = _TextureEchelle.getSize();
 		se->m_position = _Echelle[i].getPosition();
 		EntityManager::m_Entities.push_back(se);
+
 	}
 
 	// Draw Kong
@@ -117,6 +118,7 @@ Game::Game()
 	piece->m_size = _TexturePiece.getSize();
 	piece->m_position = _Piece.getPosition();
 	EntityManager::m_Entities.push_back(piece);
+
 
 
 	// Draw Statistic Font 
@@ -265,10 +267,6 @@ void Game::updateStatistics(sf::Time elapsedTime)
 }
 void Game::HandlePieceMoves()
 {
-	//
-	// Handle Enemy moves
-	//
-
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
 		if (entity->m_enabled == false)
@@ -289,18 +287,22 @@ void Game::HandlePieceMoves()
 			x++;
 			y = y + 0.04;
 		}
-
 		else {
 			x--;
-			y = y - 0.04;
+			y = y + 0.04;
 		}
 
 		if (x >= 710.f) //0)
 		{
 			entity->m_bLeftToRight = false;
+			y = y + 90.f ;
 		}
-		if (x < 380.f) {
+		if (x < 210.f) {
 			entity->m_bLeftToRight = true;
+			y = y + 90.f;
+		}
+		if (y > BLOCK_SPACE * 5) {
+			entity->m_sprite.setPosition(380.f, BLOCK_SPACE);
 		}
 		entity->m_sprite.setPosition(x, y);
 	}
@@ -323,7 +325,7 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		{
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y + 40.f
+			EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
 			);
 		}
 
@@ -331,7 +333,7 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		{
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
-				EntityManager::GetPlayer()->m_sprite.getPosition().y - 40.f
+				EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
 			);
 			mIsJump = true;
 		}
@@ -339,5 +341,6 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		{
 			return;
 		}
+
 	}
 }
