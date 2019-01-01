@@ -339,7 +339,7 @@ end:
 void Game::HandlePieceCreate()
 {
 	pos = pos + 5.f;
-	if (pos == 1000.f) {
+	if (pos == 1300.f) {
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
 		sw->m_sprite.setTexture(_TexturePiece);
 		sw->m_sprite.setPosition(380.f, BLOCK_SPACE - _TexturePiece.getSize().y);
@@ -411,24 +411,27 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 		if (isPressed == false)
 		{
-			EntityManager::GetPlayer()->m_sprite.setPosition(
-			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
-			);
-		}
 
-		if (isPressed == true)
-		{
+			mIsJump = false;
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
-				EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+				EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
 			);
-			mIsJump = true;
+			return;
 		}
+
 		if (mIsJump == true)
 		{
 			return;
 		}
+
+	
+		EntityManager::GetPlayer()->m_sprite.setPosition(
+				EntityManager::GetPlayer()->m_sprite.getPosition().x,
+				EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+		);
+		mIsJump = true;
+		
 
 	}
 }
