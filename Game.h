@@ -21,6 +21,8 @@ private:
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void HandlePieceMoves();
 	void HandlePieceCreate();
+	void HandleCollisionPiecePlayer();
+	void DisplayGameOver();
 
 private:
 	static const float		PlayerSpeed;
@@ -33,6 +35,8 @@ private:
 	sf::Text	mStatisticsText;
 	sf::Time	mStatisticsUpdateTime;
 
+	sf::Text	mText;
+
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;
 	bool mIsMovingDown;
@@ -40,6 +44,7 @@ private:
 	bool mIsMovingLeft;
 	bool mIsJump;
 	float pos = 0.f;
+	bool isAlive = true;
 
 
 	sf::Texture	_TextureEchelle;

@@ -235,7 +235,7 @@ void Game::render()
 
 		mWindow.draw(entity->m_sprite);
 	}
-
+	mWindow.draw(mText);
 	mWindow.draw(mStatisticsText);
 	mWindow.display();
 }
@@ -264,7 +264,55 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		// Handle collision weapon enemies
 		HandlePieceMoves();
 		HandlePieceCreate();
+		HandleCollisionPiecePlayer();
+		DisplayGameOver();
 	}
+}
+
+void Game::DisplayGameOver()
+{
+	if (!isAlive) {
+		mText.setFillColor(sf::Color::Green);
+		mText.setFont(mFont);
+		mText.setPosition(200.f, 200.f);
+		mText.setCharacterSize(80);
+
+		mText.setString("GAME OVER");
+
+	}
+}
+void Game::HandleCollisionPiecePlayer()
+{
+	for (std::shared_ptr<Entity> piece : EntityManager::m_Entities)
+	{
+		if (piece->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (piece->m_type != EntityType::piece)
+		{
+			continue;
+		}
+
+		sf::FloatRect boundPiece;
+		boundPiece = piece->m_sprite.getGlobalBounds();
+
+		sf::FloatRect boundPlayer;
+		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+
+		if (boundPiece.intersects(boundPlayer) == true)
+		{
+			isAlive = false;
+			piece->m_enabled = false;
+			DisplayGameOver();
+			goto end;
+		}
+	}
+
+end:
+	//nop
+	return;
 }
 
 void Game::HandlePieceCreate()
@@ -281,6 +329,7 @@ void Game::HandlePieceCreate()
 	}
 	
 }
+
 
 
 void Game::HandlePieceMoves()
