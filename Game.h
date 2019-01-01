@@ -9,6 +9,7 @@ class Game
 {
 public:
 	Game();
+
 	~Game() { };
 	void run();
 
@@ -23,6 +24,7 @@ private:
 	void HandlePieceCreate();
 	void HandleCollisionPiecePlayer();
 	void DisplayGameOver();
+	void HandleGameOver();
 
 private:
 	static const float		PlayerSpeed;
@@ -43,8 +45,9 @@ private:
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
 	bool mIsJump;
+	bool isGameOver;
 	float pos = 0.f;
-	bool isAlive = true;
+	int live;
 
 
 	sf::Texture	_TextureEchelle;

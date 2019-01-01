@@ -21,6 +21,8 @@ Game::Game()
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
+	live = 1;
+	isGameOver = false;
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
@@ -261,24 +263,43 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 	if (mStatisticsUpdateTime >= sf::seconds(0.050f))
 	{
-		// Handle collision weapon enemies
+		if (isGameOver) {
+			return;
+		}
+
 		HandlePieceMoves();
 		HandlePieceCreate();
 		HandleCollisionPiecePlayer();
+		DisplayGameOver();
+		HandleGameOver();
+	}
+}
+
+void Game::HandleGameOver()
+{
+	// Game Over ?
+	
+	if (EntityManager::GetPlayer()->m_enabled == false)
+	{
+		DisplayGameOver();
+	}
+
+	if (live == 0)
+	{
 		DisplayGameOver();
 	}
 }
 
 void Game::DisplayGameOver()
 {
-	if (!isAlive) {
+	if (live==0) {
 		mText.setFillColor(sf::Color::Green);
 		mText.setFont(mFont);
 		mText.setPosition(200.f, 200.f);
 		mText.setCharacterSize(80);
 
 		mText.setString("GAME OVER");
-
+		isGameOver = true;
 	}
 }
 void Game::HandleCollisionPiecePlayer()
@@ -303,7 +324,7 @@ void Game::HandleCollisionPiecePlayer()
 
 		if (boundPiece.intersects(boundPlayer) == true)
 		{
-			isAlive = false;
+			live --;
 			piece->m_enabled = false;
 			DisplayGameOver();
 			goto end;
