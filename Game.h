@@ -20,6 +20,7 @@ private:
 	void updateStatistics(sf::Time elapsedTime);
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void HandlePieceMoves();
+	void HandlePieceCreate();
 
 private:
 	static const float		PlayerSpeed;
@@ -38,6 +39,8 @@ private:
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
 	bool mIsJump;
+	float pos = 0.f;
+
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];

@@ -263,8 +263,26 @@ void Game::updateStatistics(sf::Time elapsedTime)
 	{
 		// Handle collision weapon enemies
 		HandlePieceMoves();
+		HandlePieceCreate();
 	}
 }
+
+void Game::HandlePieceCreate()
+{
+	pos = pos + 5.f;
+	if (pos == 1000.f) {
+		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
+		sw->m_sprite.setTexture(_TexturePiece);
+		sw->m_sprite.setPosition(380.f, BLOCK_SPACE - _TexturePiece.getSize().y);
+		sw->m_type = EntityType::piece;
+		sw->m_size = _TexturePiece.getSize();
+		EntityManager::m_Entities.push_back(sw);
+		pos = 0.f;
+	}
+	
+}
+
+
 void Game::HandlePieceMoves()
 {
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
@@ -282,7 +300,7 @@ void Game::HandlePieceMoves()
 		float x, y;
 		x = entity->m_sprite.getPosition().x;
 		y = entity->m_sprite.getPosition().y;
-
+		
 		if (entity->m_bLeftToRight == true) {
 			x++;
 			y = y + 0.04;
