@@ -5,9 +5,9 @@ enum EntityType
 	player,
 	block,
 	echelle,
-	lady 
+	lady, 
 	Kong,
-	piece,
+	piece
 };
 
 class Entity
