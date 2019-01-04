@@ -25,12 +25,16 @@ private:
 	static const float		PlayerSpeed;
 	static const sf::Time	TimePerFrame;
 
-	sf::RenderWindow		mWindow;
+	sf::RenderWindow mWindow;
 	sf::Texture	mTexture;
 	sf::Sprite	mPlayer;
 	sf::Font	mFont;
 	sf::Text	mStatisticsText;
 	sf::Time	mStatisticsUpdateTime;
+
+	sf::Texture mTextureLady;
+	sf::Sprite mLady;
+
 
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;
@@ -57,5 +61,6 @@ private:
 
 	sf::Texture _TexturePiece;
 	sf::Sprite	_Piece;
+	sf::Vector2u _sizeLady;
 };
 

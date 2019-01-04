@@ -10,6 +10,8 @@ Game::Game()
 	: mWindow(sf::VideoMode(840, 600), "Donkey Kong 1981", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
+	, mLady()
+	, mTextureLady()
 	, mFont()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
@@ -127,6 +129,22 @@ Game::Game()
 	mStatisticsText.setPosition(5.f, 5.f);
 	mStatisticsText.setCharacterSize(10);
 
+	// Draw Lady
+	mTextureLady.loadFromFile("Media/Textures/lady.png");
+	_sizeLady = mTextureLady.getSize();
+	mLady.setTexture(mTextureLady);
+	sf::Vector2f posLady;
+	posLady.x = 200.f + 70.f;
+	posLady.y = BLOCK_SPACE - _sizeLady.y;
+
+	mLady.setPosition(posLady);
+
+	std::shared_ptr<Entity> lady = std::make_shared<Entity>();
+	lady->m_sprite = mLady;
+	lady->m_type = EntityType::lady;	
+	lady->m_size = mTextureLady.getSize();
+	lady->m_position = mLady.getPosition();
+	EntityManager::m_Entities.push_back(lady);
 
 }
 
