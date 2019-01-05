@@ -47,7 +47,7 @@ private:
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
 
 	sf::Texture	_TextureBlock;
-	sf::Sprite	_Block[BLOCK_COUNT_X][BLOCK_COUNT_Y];
+	sf::Sprite	_Block[BLOCK_COUNT_X + 1][BLOCK_COUNT_Y];
 
 	sf::Texture	_TextureWeapon;
 	sf::Sprite	_Weapon;
