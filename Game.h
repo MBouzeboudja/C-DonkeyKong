@@ -20,9 +20,9 @@ private:
 
 	void updateStatistics(sf::Time elapsedTime);
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-	void HandlePieceMoves();
-	void HandlePieceCreate();
-	void HandleCollisionPiecePlayer();
+	void HandleBarilMoves();
+	void HandleBarilCreate();
+	void HandleCollisionBarilPlayer();
 	void DisplayGameOver();
 	void HandleGameOver();
 
@@ -66,7 +66,7 @@ private:
 	sf::Font	_FontKong;
 	sf::Vector2u _sizeKong;
 
-	sf::Texture _TexturePiece;
-	sf::Sprite	_Piece;
+	sf::Texture _TextureBaril;
+	sf::Sprite	_Baril;
 };
 

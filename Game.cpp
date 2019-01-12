@@ -108,18 +108,18 @@ Game::Game()
 	player->m_position = mPlayer.getPosition();
 	EntityManager::m_Entities.push_back(player);
 
-	//Draw piece
-	_TexturePiece.loadFromFile("Media/Textures/Piece.png"); // Mario_small.png");
-	_Piece.setTexture(_TexturePiece);
+	//Draw Baril
+	_TextureBaril.loadFromFile("Media/Textures/Baril.png"); // Mario_small.png");
+	_Baril.setTexture(_TextureBaril);
 
-	_Piece.setPosition(380.f, BLOCK_SPACE - _TexturePiece.getSize().y);
+	_Baril.setPosition(380.f, BLOCK_SPACE - _TextureBaril.getSize().y);
 
-	std::shared_ptr<Entity> piece = std::make_shared<Entity>();
-	piece->m_sprite = _Piece;
-	piece->m_type = EntityType::piece;
-	piece->m_size = _TexturePiece.getSize();
-	piece->m_position = _Piece.getPosition();
-	EntityManager::m_Entities.push_back(piece);
+	std::shared_ptr<Entity> Baril = std::make_shared<Entity>();
+	Baril->m_sprite = _Baril;
+	Baril->m_type = EntityType::Baril;
+	Baril->m_size = _TextureBaril.getSize();
+	Baril->m_position = _Baril.getPosition();
+	EntityManager::m_Entities.push_back(Baril);
 
 
 
@@ -183,8 +183,6 @@ void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
 
-	if (mIsMovingUp)
-		movement.y -= PlayerSpeed;
 	if (mIsMovingDown)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft) {
@@ -204,12 +202,26 @@ void Game::update(sf::Time elapsedTime)
 		{
 			continue;
 		}
+
+		if (entity->m_type == EntityType::echelle)
+		{
+			sf::FloatRect boundBaril;
+			boundBaril = entity->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundPlayer;
+			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+
+			if (mIsMovingUp && boundPlayer.intersects(boundBaril)) {
+				movement.y -= PlayerSpeed;
+			}			
+		}
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
 		}
 
 		sf::Vector2f mov = entity->m_sprite.getPosition();
+	
 		if (mov.x < 170.f) {
 			entity->m_sprite.move(1.f, 0.f);
 			mIsMovingLeft = false;
@@ -267,9 +279,9 @@ void Game::updateStatistics(sf::Time elapsedTime)
 			return;
 		}
 
-		HandlePieceMoves();
-		HandlePieceCreate();
-		HandleCollisionPiecePlayer();
+		HandleBarilMoves();
+		HandleBarilCreate();
+		HandleCollisionBarilPlayer();
 		DisplayGameOver();
 		HandleGameOver();
 	}
@@ -302,30 +314,30 @@ void Game::DisplayGameOver()
 		isGameOver = true;
 	}
 }
-void Game::HandleCollisionPiecePlayer()
+void Game::HandleCollisionBarilPlayer()
 {
-	for (std::shared_ptr<Entity> piece : EntityManager::m_Entities)
+	for (std::shared_ptr<Entity> Baril : EntityManager::m_Entities)
 	{
-		if (piece->m_enabled == false)
+		if (Baril->m_enabled == false)
 		{
 			continue;
 		}
 
-		if (piece->m_type != EntityType::piece)
+		if (Baril->m_type != EntityType::Baril)
 		{
 			continue;
 		}
 
-		sf::FloatRect boundPiece;
-		boundPiece = piece->m_sprite.getGlobalBounds();
+		sf::FloatRect boundBaril;
+		boundBaril = Baril->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
 		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-		if (boundPiece.intersects(boundPlayer) == true)
+		if (boundBaril.intersects(boundPlayer) == true)
 		{
 			live --;
-			piece->m_enabled = false;
+			Baril->m_enabled = false;
 			DisplayGameOver();
 			goto end;
 		}
@@ -336,15 +348,15 @@ end:
 	return;
 }
 
-void Game::HandlePieceCreate()
+void Game::HandleBarilCreate()
 {
 	pos = pos + 5.f;
 	if (pos == 1300.f) {
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
-		sw->m_sprite.setTexture(_TexturePiece);
-		sw->m_sprite.setPosition(380.f, BLOCK_SPACE - _TexturePiece.getSize().y);
-		sw->m_type = EntityType::piece;
-		sw->m_size = _TexturePiece.getSize();
+		sw->m_sprite.setTexture(_TextureBaril);
+		sw->m_sprite.setPosition(380.f, BLOCK_SPACE - _TextureBaril.getSize().y);
+		sw->m_type = EntityType::Baril;
+		sw->m_size = _TextureBaril.getSize();
 		EntityManager::m_Entities.push_back(sw);
 		pos = 0.f;
 	}
@@ -353,7 +365,7 @@ void Game::HandlePieceCreate()
 
 
 
-void Game::HandlePieceMoves()
+void Game::HandleBarilMoves()
 {
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
@@ -362,7 +374,7 @@ void Game::HandlePieceMoves()
 			continue;
 		}
 
-		if (entity->m_type != EntityType::piece)
+		if (entity->m_type != EntityType::Baril)
 		{
 			continue;
 		}
@@ -397,6 +409,9 @@ void Game::HandlePieceMoves()
 }
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
+	sf::Clock clock;
+	sf::Time elapsed1;
+
 	if (key == sf::Keyboard::Up)
 		mIsMovingUp = isPressed;
 	else if (key == sf::Keyboard::Down)
@@ -420,16 +435,24 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 			return;
 		}
 
-		if (mIsJump == true)
-		{
+		if (mIsJump== true) {
+			sf::Time elapsed2 = clock.getElapsedTime();
+			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
+				EntityManager::GetPlayer()->m_sprite.setPosition(
+					EntityManager::GetPlayer()->m_sprite.getPosition().x,
+					EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
+				);
+			}
 			return;
 		}
 
-	
+		elapsed1 = clock.getElapsedTime();
 		EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
 				EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
 		);
+
+
 		mIsJump = true;
 		
 
