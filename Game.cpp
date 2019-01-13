@@ -121,7 +121,22 @@ Game::Game()
 	Baril->m_position = _Baril.getPosition();
 	EntityManager::m_Entities.push_back(Baril);
 
+	// Draw hammer
+	_TextureWeapon.loadFromFile("Media/Textures/marteau.png");
+	_sizeWeapon = _TextureWeapon.getSize();
+	_Weapon.setTexture(_TextureWeapon);
+	sf::Vector2f posHammer;
+	posHammer.x = 300.f + 150.f;
+	posHammer.y = BLOCK_SPACE * 5 - _sizeWeapon.y;
 
+	_Weapon.setPosition(posHammer);
+	std::shared_ptr<Entity> hammer = std::make_shared<Entity>();
+
+	hammer->m_sprite = _Weapon;
+	hammer->m_type = EntityType::hammer;
+	hammer->m_size = mTexture.getSize();
+	hammer->m_position = _Weapon.getPosition();
+	EntityManager::m_Entities.push_back(hammer);
 
 	// Draw Statistic Font 
 
@@ -284,6 +299,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleCollisionBarilPlayer();
 		DisplayGameOver();
 		HandleGameOver();
+		HandleCollisionPlayerHammer();
 	}
 }
 
@@ -336,10 +352,17 @@ void Game::HandleCollisionBarilPlayer()
 
 		if (boundBaril.intersects(boundPlayer) == true)
 		{
-			live --;
-			Baril->m_enabled = false;
-			DisplayGameOver();
-			goto end;
+			if (EntityManager::GetPlayer()->w_enabled)
+			{
+				Baril->m_enabled = false;
+			}
+			else
+			{
+				live--;
+				Baril->m_enabled = false;
+				DisplayGameOver();
+				goto end;
+			}
 		}
 	}
 
@@ -457,4 +480,54 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		
 
 	}
+}
+void Game::ResetSprites()
+{
+	isGameOver = false;
+	//_IsEnemyWeaponFired = false;
+	//_IsPlayerWeaponFired = false;
+	//_IsEnemyMasterWeaponFired = false;
+
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_type == player)
+		{
+			sf::Vector2f initPos;
+
+			initPos.x = POS_MARIO_X;
+			initPos.y = POS_MARIO_Y;
+			entity->m_sprite.setPosition(initPos);
+		}
+	}
+}
+void Game::HandleCollisionPlayerHammer()
+{
+	for (std::shared_ptr<Entity> hammer : EntityManager::m_Entities)
+	{
+		if (hammer->m_type != EntityType::hammer)
+		{
+			continue;
+		}
+		for (std::shared_ptr<Entity> player : EntityManager::m_Entities)
+		{
+			if (player->m_type != EntityType::player)
+			{
+				continue;
+			}
+			sf::FloatRect r1;
+			r1 = hammer->m_sprite.getGlobalBounds();
+
+
+			sf::FloatRect r2;
+			r2 = player->m_sprite.getGlobalBounds();
+			if (r1.intersects(r2))
+			{
+				hammer->m_enabled = false;
+				player->w_enabled = true;
+				goto end;
+			}
+		}
+	}
+end:
+	return;
 }

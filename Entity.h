@@ -7,6 +7,7 @@ enum EntityType
 	echelle,
 	Kong,
 	Baril,
+	hammer,
 	baril,
 };
 
@@ -22,6 +23,8 @@ public:
 	sf::Vector2f m_position;
 	EntityType m_type;
 	bool m_enabled = true;
+	int m_movement;
+	bool w_enabled = false;
 
 	// Enemy only
 	bool m_bLeftToRight = true;

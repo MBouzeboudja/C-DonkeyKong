@@ -4,6 +4,9 @@
 #define BLOCK_COUNT_X 8
 #define BLOCK_COUNT_Y 5
 #define BLOCK_SPACE 110.f
+#define POS_MARIO_X  150.f + 70.f
+#define POS_MARIO_Y (BLOCK_SPACE * 5) - 55
+
 
 class Game
 {
@@ -25,6 +28,8 @@ private:
 	void HandleCollisionBarilPlayer();
 	void DisplayGameOver();
 	void HandleGameOver();
+	void ResetSprites();
+	void HandleCollisionPlayerHammer();
 
 private:
 	static const float		PlayerSpeed;
@@ -56,8 +61,10 @@ private:
 	sf::Texture	_TextureBlock;
 	sf::Sprite	_Block[BLOCK_COUNT_X][BLOCK_COUNT_Y];
 
+
 	sf::Texture	_TextureWeapon;
 	sf::Sprite	_Weapon;
+	sf::Vector2u _sizeWeapon;
 	sf::Vector2u _sizeBlock;
 	sf::Vector2u _sizeMario;
 
