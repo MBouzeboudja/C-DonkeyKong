@@ -9,6 +9,7 @@ enum EntityType
 	Baril,
 	baril,
 	princesse,
+	piece,
 };
 
 class Entity

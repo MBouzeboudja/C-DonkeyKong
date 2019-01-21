@@ -24,6 +24,7 @@ Game::Game()
 	live = 1;
 	isGameOver = false;
 	isWin = false;
+	score = 0.f;
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
@@ -132,7 +133,7 @@ Game::Game()
 	EntityManager::m_Entities.push_back(player);
 
 	//Draw Baril
-	_TextureBaril.loadFromFile("Media/Textures/Baril.png"); // Mario_small.png");
+	_TextureBaril.loadFromFile("Media/Textures/Baril.png");
 	_Baril.setTexture(_TextureBaril);
 
 	_Baril.setPosition(380.f, 2*BLOCK_SPACE - _TextureBaril.getSize().y);
@@ -144,7 +145,19 @@ Game::Game()
 	Baril->m_position = _Baril.getPosition();
 	EntityManager::m_Entities.push_back(Baril);
 
+	//Draw Baril
+	_TexturePiece.loadFromFile("Media/Textures/piece.png"); 
+	_Piece.setTexture(_TexturePiece);
 
+	_Piece.setPosition(380.f, 6 * BLOCK_SPACE - _TexturePiece.getSize().y);
+
+	std::shared_ptr<Entity> piece = std::make_shared<Entity>();
+	piece->m_sprite = _Piece;
+	piece->m_type = EntityType::piece;
+	piece->m_size = _TexturePiece.getSize();
+	piece->m_position = _Piece.getPosition();
+	EntityManager::m_Entities.push_back(piece);
+	
 
 	// Draw Statistic Font 
 
@@ -153,8 +166,15 @@ Game::Game()
 	mStatisticsText.setFont(mFont);
 	mStatisticsText.setPosition(5.f, 5.f);
 	mStatisticsText.setCharacterSize(10);
+	
+	//Draw score
+	mScore.setFillColor(sf::Color::Green);
+	mScore.setFont(mFont);
+	mScore.setPosition(20.f, 100.f);
+	mScore.setCharacterSize(20);
+	mScore.setString(std::to_string(score));
 
-
+	
 }
 
 void Game::run()
@@ -276,6 +296,7 @@ void Game::render()
 		mWindow.draw(entity->m_sprite);
 	}
 	mWindow.draw(mText);
+	mWindow.draw(mScore);
 	mWindow.draw(mStatisticsText);
 	mWindow.display();
 }
@@ -305,12 +326,16 @@ void Game::updateStatistics(sf::Time elapsedTime)
 			return;
 		}
 
+		
+		//HandleScore();
 		HandleBarilMoves();
 		HandleBarilCreate();
 		HandleCollisionBarilPlayer();
 		DisplayGameOver();
 		HandleGameOver();
 		HandleCollisionPrincessePlayer();
+		HandleCollisionPiecePlayer();
+		
 	}
 }
 
@@ -334,8 +359,8 @@ void Game::DisplayWin()
 
 		mText.setFillColor(sf::Color::Green);
 		mText.setFont(mFont);
-		mText.setPosition(200.f, 200.f);
-		mText.setCharacterSize(80);
+		mText.setPosition(200.f, 400.f);
+		mText.setCharacterSize(100);
 
 		mText.setString("Champion!!!");
 		isWin = true;
@@ -346,8 +371,8 @@ void Game::DisplayGameOver()
 	if (live == 0) {
 		mText.setFillColor(sf::Color::Red);
 		mText.setFont(mFont);
-		mText.setPosition(200.f, 200.f);
-		mText.setCharacterSize(80);
+		mText.setPosition(200.f, 400.f);
+		mText.setCharacterSize(100);
 
 		mText.setString("GAME OVER");
 		isGameOver = true;

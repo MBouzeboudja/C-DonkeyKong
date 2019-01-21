@@ -28,6 +28,8 @@ private:
 	void HandleGameOver();
 	void HandleCollisionPrincessePlayer();
 	void DisplayWin();
+	void HandleScore();
+	void HandleCollisionPiecePlayer();
 
 private:
 	static const float		PlayerSpeed;
@@ -41,6 +43,7 @@ private:
 	sf::Time	mStatisticsUpdateTime;
 
 	sf::Text	mText;
+	sf::Text	mScore;
 
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;
@@ -52,6 +55,7 @@ private:
 	bool isWin;
 	float pos = 0.f;
 	int live;
+	int score;
 
 
 	sf::Texture	_TextureEchelle;
@@ -74,6 +78,11 @@ private:
 	sf::Sprite	_Princesse;
 	sf::Font	_FontPrincesse;
 	sf::Vector2u _sizePrincesse;
+
+	sf::Texture _TexturePiece;
+	sf::Sprite	_Piece;
+	sf::Font	_FontPiece;
+	sf::Vector2u _sizePiece;
 
 	sf::Texture _TextureBaril;
 	sf::Sprite	_Baril;
