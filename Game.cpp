@@ -23,6 +23,7 @@ Game::Game()
 	mIsJump = false;
 	live = 1;
 	isGameOver = false;
+	isWin = false;
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
@@ -96,6 +97,21 @@ Game::Game()
 	kong->m_size = _TextureKong.getSize();
 	kong->m_position = _Kong.getPosition();
 	EntityManager::m_Entities.push_back(kong);
+
+	// Draw Princesse
+
+	_TexturePrincesse.loadFromFile("Media/Textures/princesse.png"); // Mario_small.png");
+	_sizePrincesse = _TexturePrincesse.getSize();
+	_Princesse.setTexture(_TexturePrincesse);
+
+	_Princesse.setPosition(100.f + 70.f * 4, BLOCK_SPACE +30.f - _sizePrincesse.y);
+
+	std::shared_ptr<Entity> princesse = std::make_shared<Entity>();
+	princesse->m_sprite = _Princesse;
+	princesse->m_type = EntityType::princesse;
+	princesse->m_size = _TexturePrincesse.getSize();
+	princesse->m_position = _Princesse.getPosition();
+	EntityManager::m_Entities.push_back(princesse);
 
 	// Draw Mario
 
@@ -190,6 +206,8 @@ void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
 
+	if (mIsMovingUp)
+		movement.y -= PlayerSpeed;
 	if (mIsMovingDown)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft) {
@@ -210,7 +228,7 @@ void Game::update(sf::Time elapsedTime)
 			continue;
 		}
 
-		if (entity->m_type == EntityType::echelle)
+	/*	if (entity->m_type == EntityType::echelle)
 		{
 			sf::FloatRect boundBaril;
 			boundBaril = entity->m_sprite.getGlobalBounds();
@@ -221,7 +239,7 @@ void Game::update(sf::Time elapsedTime)
 			if (mIsMovingUp && boundPlayer.intersects(boundBaril)) {
 				movement.y -= PlayerSpeed;
 			}			
-		}
+		}*/
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
@@ -282,7 +300,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 	if (mStatisticsUpdateTime >= sf::seconds(0.050f))
 	{
-		if (isGameOver) {
+		if (isGameOver ) {
 			return;
 		}
 
@@ -291,6 +309,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleCollisionBarilPlayer();
 		DisplayGameOver();
 		HandleGameOver();
+		//HandleCollisionPrincessePlayer();
 	}
 }
 
@@ -308,11 +327,23 @@ void Game::HandleGameOver()
 		DisplayGameOver();
 	}
 }
+/*
+void Game::DisplayWin()
+{
 
+		mText.setFillColor(sf::Color::Green);
+		mText.setFont(mFont);
+		mText.setPosition(200.f, 200.f);
+		mText.setCharacterSize(80);
+
+		mText.setString("Champion!!!");
+		isWin = true;
+	
+}*/
 void Game::DisplayGameOver()
 {
-	if (live==0) {
-		mText.setFillColor(sf::Color::Green);
+	if (live == 0) {
+		mText.setFillColor(sf::Color::Red);
 		mText.setFont(mFont);
 		mText.setPosition(200.f, 200.f);
 		mText.setCharacterSize(80);
@@ -321,6 +352,38 @@ void Game::DisplayGameOver()
 		isGameOver = true;
 	}
 }
+/*
+void Game::HandleCollisionPrincessePlayer()
+{
+	for (std::shared_ptr<Entity> princesse : EntityManager::m_Entities)
+	{
+		if (princesse->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (princesse->m_type != EntityType::princesse)
+		{
+			continue;
+		}
+
+		sf::FloatRect boundPrincesse;
+		boundPrincesse = princesse->m_sprite.getGlobalBounds();
+
+		sf::FloatRect boundPlayer;
+		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+
+		if (boundPrincesse.intersects(boundPlayer) == true)
+		{
+			DisplayWin();
+			goto end;
+		}
+	}
+
+end:
+	//nop
+	return;
+}*/
 void Game::HandleCollisionBarilPlayer()
 {
 	for (std::shared_ptr<Entity> Baril : EntityManager::m_Entities)

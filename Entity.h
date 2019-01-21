@@ -8,6 +8,7 @@ enum EntityType
 	Kong,
 	Baril,
 	baril,
+	princesse,
 };
 
 class Entity

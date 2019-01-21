@@ -26,6 +26,8 @@ private:
 	void HandleCollisionBarilPlayer();
 	void DisplayGameOver();
 	void HandleGameOver();
+	//void HandleCollisionPrincessePlayer();
+	//void DisplayWin();
 
 private:
 	static const float		PlayerSpeed;
@@ -47,6 +49,7 @@ private:
 	bool mIsMovingLeft;
 	bool mIsJump;
 	bool isGameOver;
+	//bool isWin;
 	float pos = 0.f;
 	int live;
 
@@ -66,6 +69,11 @@ private:
 	sf::Sprite	_Kong;
 	sf::Font	_FontKong;
 	sf::Vector2u _sizeKong;
+
+	sf::Texture _TexturePrincesse;
+	sf::Sprite	_Princesse;
+	sf::Font	_FontPrincesse;
+	sf::Vector2u _sizePrincesse;
 
 	sf::Texture _TextureBaril;
 	sf::Sprite	_Baril;
