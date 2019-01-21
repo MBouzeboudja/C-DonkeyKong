@@ -33,13 +33,18 @@ Game::Game()
 		for (int j = 0; j < BLOCK_COUNT_Y; j++)
 		{
 			_Block[i][j].setTexture(_TextureBlock);
-			if (j % 2 != 0) {
-				if (j == 1 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 210.f);
+			if (j == 0) {
+				if (i >= 3 && i < 6) _Block[i][j].setPosition(100.f + 70.f * (i + 1), BLOCK_SPACE+20.f);
 				else
-				{
+					continue;
+			}
+			else if (j % 2 != 0) {
+					if (j == 1 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 210.f);
+					else
+					{
 					_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
 
-				}
+					}
 			}
 			else {
 				_Block[i][j].setPosition(170.f + 70.f * (i + 1), +10.f + BLOCK_SPACE * (j + 1) - i * 3.f);
@@ -62,7 +67,8 @@ Game::Game()
 	for (int i = 0; i < ECHELLE_COUNT; i++)
 	{
 		_Echelle[i].setTexture(_TextureEchelle);
-		if(i%2!=0)
+		if(i==0) _Echelle[i].setPosition(540.f, 15.f + BLOCK_SPACE + _sizeBlock.y);
+		else if(i%2!=0)
 			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
 		else
 			_Echelle[i].setPosition(310.f ,5.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
