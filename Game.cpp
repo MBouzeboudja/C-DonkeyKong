@@ -206,10 +206,7 @@ void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
 
-	if (mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if (mIsMovingDown)
-		movement.y += PlayerSpeed;
+
 	if (mIsMovingLeft) {
 		movement.x -= PlayerSpeed;
 		movement.y -= 3.8;
@@ -228,18 +225,22 @@ void Game::update(sf::Time elapsedTime)
 			continue;
 		}
 
-	/*	if (entity->m_type == EntityType::echelle)
+		if (entity->m_type == EntityType::echelle)
 		{
-			sf::FloatRect boundBaril;
-			boundBaril = entity->m_sprite.getGlobalBounds();
+			sf::FloatRect boundEchelle;
+			boundEchelle = entity->m_sprite.getGlobalBounds();
 
 			sf::FloatRect boundPlayer;
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-			if (mIsMovingUp && boundPlayer.intersects(boundBaril)) {
+			if (mIsMovingUp && boundPlayer.intersects(boundEchelle)) {
 				movement.y -= PlayerSpeed;
-			}			
-		}*/
+			}	
+			if (mIsMovingDown && boundPlayer.intersects(boundEchelle)) {
+				movement.y += PlayerSpeed;
+			}
+
+		}
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
