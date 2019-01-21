@@ -34,7 +34,7 @@ Game::Game()
 		{
 			_Block[i][j].setTexture(_TextureBlock);
 			if (j % 2 != 0) {
-				if (j == 1 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), BLOCK_SPACE*2);
+				if (j == 1 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 210.f);
 				else
 				{
 					_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
@@ -113,7 +113,7 @@ Game::Game()
 	_TextureBaril.loadFromFile("Media/Textures/Baril.png"); // Mario_small.png");
 	_Baril.setTexture(_TextureBaril);
 
-	_Baril.setPosition(380.f, BLOCK_SPACE - _TextureBaril.getSize().y);
+	_Baril.setPosition(380.f, 2*BLOCK_SPACE - _TextureBaril.getSize().y);
 
 	std::shared_ptr<Entity> Baril = std::make_shared<Entity>();
 	Baril->m_sprite = _Baril;
@@ -355,7 +355,7 @@ void Game::HandleBarilCreate()
 	if (pos == 1300.f) {
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
 		sw->m_sprite.setTexture(_TextureBaril);
-		sw->m_sprite.setPosition(380.f, -10.f + BLOCK_SPACE - _TextureBaril.getSize().y);
+		sw->m_sprite.setPosition(380.f, 2 * BLOCK_SPACE - _TextureBaril.getSize().y);
 		sw->m_type = EntityType::Baril;
 		sw->m_size = _TextureBaril.getSize();
 		EntityManager::m_Entities.push_back(sw);
@@ -383,6 +383,9 @@ void Game::HandleBarilMoves()
 		float x, y;
 		x = entity->m_sprite.getPosition().x;
 		y = entity->m_sprite.getPosition().y;
+		if (y >  BLOCK_SPACE * (5 + 1) + 7 * 3.f) {
+			entity->m_enabled = false;
+		}
 		
 		if (entity->m_bLeftToRight == true) {
 			x++;
@@ -401,9 +404,6 @@ void Game::HandleBarilMoves()
 		if (x < 210.f) {
 			entity->m_bLeftToRight = true;
 			y = y + 90.f;
-		}
-		if (y > BLOCK_SPACE*5) {
-			entity->m_sprite.setPosition(380.f, BLOCK_SPACE);
 		}
 		entity->m_sprite.setPosition(x, y);
 	}
