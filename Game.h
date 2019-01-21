@@ -28,8 +28,9 @@ private:
 	void HandleGameOver();
 	void HandleCollisionPrincessePlayer();
 	void DisplayWin();
-	void HandleScore();
+	void HandleScoreLive();
 	void HandleCollisionPiecePlayer();
+
 
 private:
 	static const float		PlayerSpeed;
@@ -44,6 +45,7 @@ private:
 
 	sf::Text	mText;
 	sf::Text	mScore;
+	sf::Text	mLive;
 
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;

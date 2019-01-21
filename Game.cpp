@@ -21,10 +21,10 @@ Game::Game()
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
-	live = 1;
+	live = 3;
 	isGameOver = false;
 	isWin = false;
-	score = 0.f;
+	score = 0;
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
@@ -145,7 +145,7 @@ Game::Game()
 	Baril->m_position = _Baril.getPosition();
 	EntityManager::m_Entities.push_back(Baril);
 
-	//Draw Baril
+	//Draw piece
 	_TexturePiece.loadFromFile("Media/Textures/piece.png"); 
 	_Piece.setTexture(_TexturePiece);
 
@@ -174,8 +174,18 @@ Game::Game()
 	mScore.setCharacterSize(20);
 	mScore.setString(std::to_string(score));
 
+	//Draw live
+	mLive.setFillColor(sf::Color::Green);
+	mLive.setFont(mFont);
+	mLive.setPosition(20.f, 130.f);
+	mLive.setCharacterSize(20);
+	mLive.setString(std::to_string(live));
+
+
+
 	
 }
+
 
 void Game::run()
 {
@@ -297,6 +307,7 @@ void Game::render()
 	}
 	mWindow.draw(mText);
 	mWindow.draw(mScore);
+	mWindow.draw(mLive);
 	mWindow.draw(mStatisticsText);
 	mWindow.display();
 }
@@ -327,7 +338,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		}
 
 		
-		HandleScore();
+		HandleScoreLive();
 		HandleBarilMoves();
 		HandleBarilCreate();
 		HandleCollisionBarilPlayer();
@@ -339,9 +350,11 @@ void Game::updateStatistics(sf::Time elapsedTime)
 	}
 }
 
-void Game::HandleScore()
+
+void Game::HandleScoreLive()
 {
 		mScore.setString("Score : " + std::to_string(score));
+		mLive.setString("Lives : " + std::to_string(live));
 }
 
 void Game::HandleCollisionPiecePlayer()
@@ -415,6 +428,7 @@ void Game::DisplayGameOver()
 		mText.setString("GAME OVER");
 		isGameOver = true;
 	}
+
 }
 void Game::HandleCollisionPrincessePlayer()
 {
