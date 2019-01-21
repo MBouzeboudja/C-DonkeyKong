@@ -3,7 +3,7 @@
 #define ECHELLE_COUNT 5
 #define BLOCK_COUNT_X 8
 #define BLOCK_COUNT_Y 6
-#define BLOCK_SPACE 280.f
+#define BLOCK_SPACE 110.f
 #define FIRST_SPACE 300.f
 
 class Game
