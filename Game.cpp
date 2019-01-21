@@ -327,7 +327,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		}
 
 		
-		//HandleScore();
+		HandleScore();
 		HandleBarilMoves();
 		HandleBarilCreate();
 		HandleCollisionBarilPlayer();
@@ -337,6 +337,44 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleCollisionPiecePlayer();
 		
 	}
+}
+
+void Game::HandleScore()
+{
+		mScore.setString("Score : " + std::to_string(score));
+}
+
+void Game::HandleCollisionPiecePlayer()
+{
+	for (std::shared_ptr<Entity> piece : EntityManager::m_Entities)
+	{
+		if (piece->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (piece->m_type != EntityType::piece)
+		{
+			continue;
+		}
+
+		sf::FloatRect boundPiece;
+		boundPiece = piece->m_sprite.getGlobalBounds();
+
+		sf::FloatRect boundPlayer;
+		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+
+		if (boundPiece.intersects(boundPlayer) == true)
+		{
+			piece->m_enabled = false;
+			score += 100;
+			goto end;
+		}
+	}
+
+end:
+	//nop
+	return;
 }
 
 void Game::HandleGameOver()
