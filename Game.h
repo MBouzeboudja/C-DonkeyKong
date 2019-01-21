@@ -26,8 +26,8 @@ private:
 	void HandleCollisionBarilPlayer();
 	void DisplayGameOver();
 	void HandleGameOver();
-	//void HandleCollisionPrincessePlayer();
-	//void DisplayWin();
+	void HandleCollisionPrincessePlayer();
+	void DisplayWin();
 
 private:
 	static const float		PlayerSpeed;
@@ -49,7 +49,7 @@ private:
 	bool mIsMovingLeft;
 	bool mIsJump;
 	bool isGameOver;
-	//bool isWin;
+	bool isWin;
 	float pos = 0.f;
 	int live;
 

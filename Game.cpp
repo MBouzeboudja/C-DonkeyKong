@@ -300,7 +300,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 	if (mStatisticsUpdateTime >= sf::seconds(0.050f))
 	{
-		if (isGameOver ) {
+		if (isGameOver || isWin ) {
 			return;
 		}
 
@@ -309,7 +309,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleCollisionBarilPlayer();
 		DisplayGameOver();
 		HandleGameOver();
-		//HandleCollisionPrincessePlayer();
+		HandleCollisionPrincessePlayer();
 	}
 }
 
@@ -327,7 +327,7 @@ void Game::HandleGameOver()
 		DisplayGameOver();
 	}
 }
-/*
+
 void Game::DisplayWin()
 {
 
@@ -339,7 +339,7 @@ void Game::DisplayWin()
 		mText.setString("Champion!!!");
 		isWin = true;
 	
-}*/
+}
 void Game::DisplayGameOver()
 {
 	if (live == 0) {
@@ -352,7 +352,6 @@ void Game::DisplayGameOver()
 		isGameOver = true;
 	}
 }
-/*
 void Game::HandleCollisionPrincessePlayer()
 {
 	for (std::shared_ptr<Entity> princesse : EntityManager::m_Entities)
@@ -383,7 +382,7 @@ void Game::HandleCollisionPrincessePlayer()
 end:
 	//nop
 	return;
-}*/
+}
 void Game::HandleCollisionBarilPlayer()
 {
 	for (std::shared_ptr<Entity> Baril : EntityManager::m_Entities)
