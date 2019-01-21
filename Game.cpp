@@ -7,7 +7,7 @@ const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-	: mWindow(sf::VideoMode(840, 600), "Donkey Kong 1981", sf::Style::Close)
+	: mWindow(sf::VideoMode(1000, 1000), "Donkey Kong 1981", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
 	, mFont()
@@ -33,16 +33,16 @@ Game::Game()
 		for (int j = 0; j < BLOCK_COUNT_Y; j++)
 		{
 			_Block[i][j].setTexture(_TextureBlock);
-			if (j % 2 == 0) {
-				if (j == 0 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 0.f + 100.f * (j + 1));
+			if (j % 2 != 0) {
+				if (j == 1 && i < 3) _Block[i][j].setPosition(100.f + 70.f * (i + 1), 360.f);
 				else
 				{
-					_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
+					_Block[i][j].setPosition(100.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j*0.4 + 1) + i * 3.f);
 
 				}
 			}
 			else {
-				_Block[i][j].setPosition(170.f + 70.f * (i + 1), +10.f + BLOCK_SPACE * (j + 1) - i * 3.f);
+				_Block[i][j].setPosition(170.f + 70.f * (i + 1), +10.f + BLOCK_SPACE * (j*0.4 + 1) - i * 3.f);
 			}
 
 			std::shared_ptr<Entity> se = std::make_shared<Entity>();
@@ -53,6 +53,7 @@ Game::Game()
 			EntityManager::m_Entities.push_back(se);
 		}
 	}
+	
 
 	// Draw Echelles
 
@@ -61,10 +62,10 @@ Game::Game()
 	for (int i = 0; i < ECHELLE_COUNT; i++)
 	{
 		_Echelle[i].setTexture(_TextureEchelle);
-		if(i%2==0)
-			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
+		if(i%2!=0)
+			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i*0.4 + 1) + _sizeBlock.y );
 		else
-			_Echelle[i].setPosition(310.f ,3.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
+			_Echelle[i].setPosition(310.f ,5.f+BLOCK_SPACE * (i*0.4 + 1) + _sizeBlock.y);
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Echelle[i];
@@ -81,7 +82,7 @@ Game::Game()
 	_sizeKong = _TextureKong.getSize();
 	_Kong.setTexture(_TextureKong);
 
-	_Kong.setPosition(280.f,BLOCK_SPACE - _sizeKong.y);
+	_Kong.setPosition(280.f,370.f - _sizeKong.y);
 
 	std::shared_ptr<Entity> kong = std::make_shared<Entity>();
 	kong->m_sprite = _Kong;
@@ -97,7 +98,7 @@ Game::Game()
 	mPlayer.setTexture(mTexture);
 	sf::Vector2f posMario;
 	posMario.x = 100.f + 70.f;
-	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y - 5.f;
+	posMario.y = -5.f + BLOCK_SPACE * (5*0.4 + 1) - _sizeMario.y;
 
 	mPlayer.setPosition(posMario);
 
@@ -354,7 +355,7 @@ void Game::HandleBarilCreate()
 	if (pos == 1300.f) {
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
 		sw->m_sprite.setTexture(_TextureBaril);
-		sw->m_sprite.setPosition(380.f, BLOCK_SPACE - _TextureBaril.getSize().y);
+		sw->m_sprite.setPosition(380.f, -10.f + BLOCK_SPACE * (1*0.4 + 1) - _TextureBaril.getSize().y);
 		sw->m_type = EntityType::Baril;
 		sw->m_size = _TextureBaril.getSize();
 		EntityManager::m_Entities.push_back(sw);
@@ -385,7 +386,7 @@ void Game::HandleBarilMoves()
 		
 		if (entity->m_bLeftToRight == true) {
 			x++;
-			y = y + 0.04;
+			y = y + 0.0455;
 		}
 		else {
 			x--;
@@ -401,7 +402,7 @@ void Game::HandleBarilMoves()
 			entity->m_bLeftToRight = true;
 			y = y + 90.f;
 		}
-		if (y > BLOCK_SPACE * 5) {
+		if (y > 170.f) {
 			entity->m_sprite.setPosition(380.f, BLOCK_SPACE);
 		}
 		entity->m_sprite.setPosition(x, y);
