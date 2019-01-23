@@ -162,7 +162,13 @@ Game::Game()
 					continue;
 			}
 			else if (j % 2 != 0) {
-				_Piece[i][j].setPosition(100.f + 70.f * (i*3 + 2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
+				if (i != 1) {
+					_Piece[i][j].setPosition(100.f + 70.f * (i * 3 + 2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
+				}
+				else
+				{
+					continue;
+				}
 			}
 			else {
 				_Piece[i][j].setPosition(170.f + 70.f * (i*3 + 1), -30.f + BLOCK_SPACE * (j + 1) - (i * 3 + 2) * 3.f);
