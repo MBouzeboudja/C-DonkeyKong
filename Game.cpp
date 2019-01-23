@@ -208,6 +208,24 @@ Game::Game()
 	
 }
 
+void Game::ResetGame()
+{
+
+	_sizeMario = mTexture.getSize();
+	mPlayer.setTexture(mTexture);
+	sf::Vector2f posMario;
+	posMario.x = 100.f + 70.f;
+	posMario.y = -5.f + BLOCK_SPACE * 6 - _sizeMario.y;
+
+	mPlayer.setPosition(posMario);
+
+	std::shared_ptr<Entity> player = std::make_shared<Entity>();
+	player->m_sprite = mPlayer;
+	player->m_type = EntityType::player;
+	player->m_size = mTexture.getSize();
+	player->m_position = mPlayer.getPosition();
+	EntityManager::m_Entities.push_back(player);
+}
 
 void Game::run()
 {
@@ -283,13 +301,15 @@ void Game::update(sf::Time elapsedTime)
 			boundEchelle = entity->m_sprite.getGlobalBounds();
 
 			sf::FloatRect boundPlayer;
-			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+			if (EntityManager::GetPlayer() != NULL) {
+				boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-			if (mIsMovingUp && boundPlayer.intersects(boundEchelle)) {
-				movement.y -= PlayerSpeed;
-			}	
-			if (mIsMovingDown && boundPlayer.intersects(boundEchelle)) {
-				movement.y += PlayerSpeed;
+				if (mIsMovingUp && boundPlayer.intersects(boundEchelle)) {
+					movement.y -= PlayerSpeed;
+				}
+				if (mIsMovingDown && boundPlayer.intersects(boundEchelle)) {
+					movement.y += PlayerSpeed;
+				}
 			}
 
 		}
@@ -361,11 +381,10 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 		
 		HandleScoreLive();
+		HandleGameOver();
 		HandleBarilMoves();
 		HandleBarilCreate();
 		HandleCollisionBarilPlayer();
-		DisplayGameOver();
-		HandleGameOver();
 		HandleCollisionPrincessePlayer();
 		HandleCollisionPiecePlayer();
 		
@@ -397,13 +416,15 @@ void Game::HandleCollisionPiecePlayer()
 		boundPiece = piece->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+		if (EntityManager::GetPlayer() != NULL) {
+			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-		if (boundPiece.intersects(boundPlayer) == true)
-		{
-			piece->m_enabled = false;
-			score += 100;
-			goto end;
+			if (boundPiece.intersects(boundPlayer) == true)
+			{
+				piece->m_enabled = false;
+				score += 100;
+				goto end;
+			}
 		}
 	}
 
@@ -416,7 +437,7 @@ void Game::HandleGameOver()
 {
 	// Game Over ?
 	
-	if (EntityManager::GetPlayer()->m_enabled == false)
+	if (EntityManager::GetPlayer() == NULL)
 	{
 		DisplayGameOver();
 	}
@@ -450,6 +471,10 @@ void Game::DisplayGameOver()
 		mText.setString("GAME OVER");
 		isGameOver = true;
 	}
+	else
+	{
+		ResetGame();
+	}
 }
 void Game::HandleCollisionPrincessePlayer()
 {
@@ -469,12 +494,14 @@ void Game::HandleCollisionPrincessePlayer()
 		boundPrincesse = princesse->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+		if (EntityManager::GetPlayer() != NULL) {
+			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-		if (boundPrincesse.intersects(boundPlayer) == true)
-		{
-			DisplayWin();
-			goto end;
+			if (boundPrincesse.intersects(boundPlayer) == true)
+			{
+				DisplayWin();
+				goto end;
+			}
 		}
 	}
 
@@ -500,21 +527,18 @@ void Game::HandleCollisionBarilPlayer()
 		boundBaril = Baril->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+		if (EntityManager::GetPlayer() != NULL) {
+			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-		if (boundBaril.intersects(boundPlayer) == true)
-		{
-			live --;
-			score -= 50;
-			Baril->m_enabled = false;
-			sf::Vector2f posMario;
-			posMario.x = 100.f + 70.f;
-			posMario.y = -5.f + BLOCK_SPACE * 6 - _sizeMario.y;
+			if (boundBaril.intersects(boundPlayer) == true)
+			{
+				live--;
+				score -= 50;
+				Baril->m_enabled = false;
+				EntityManager::GetPlayer()->m_enabled = false;
 
-			mPlayer.setPosition(posMario);
-
-
-			goto end;
+				goto end;
+			}
 		}
 	}
 

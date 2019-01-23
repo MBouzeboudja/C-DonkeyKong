@@ -19,7 +19,7 @@ private:
 	void processEvents();
 	void update(sf::Time elapsedTime);
 	void render();
-
+	void ResetGame();
 	void updateStatistics(sf::Time elapsedTime);
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void HandleBarilMoves();
