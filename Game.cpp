@@ -163,7 +163,7 @@ Game::Game()
 			}
 			else if (j % 2 != 0) {
 				if (i != 1) {
-					_Piece[i][j].setPosition(100.f + 70.f * (i * 3 + 2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
+					_Piece[i][j].setPosition(100.f+ 70.f * (i * 3 + 2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
 				}
 				else
 				{
@@ -171,7 +171,7 @@ Game::Game()
 				}
 			}
 			else {
-				_Piece[i][j].setPosition(170.f + 70.f * (i*3 + 1), -30.f + BLOCK_SPACE * (j + 1) - (i * 3 + 2) * 3.f);
+				_Piece[i][j].setPosition(190.f + 70.f * (i*3 + 1), -30.f + BLOCK_SPACE * (j + 1) - (i * 3 + 2) * 3.f);
 			}
 
 			std::shared_ptr<Entity> piece = std::make_shared<Entity>();
