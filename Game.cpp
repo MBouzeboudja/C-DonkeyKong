@@ -69,11 +69,11 @@ Game::Game()
 	for (int i = 0; i < ECHELLE_COUNT; i++)
 	{
 		_Echelle[i].setTexture(_TextureEchelle);
-		if(i==0) _Echelle[i].setPosition(540.f, 15.f + BLOCK_SPACE + _sizeBlock.y);
+		if(i==0) _Echelle[i].setPosition(540.f, -14.f+BLOCK_SPACE + _sizeBlock.y);
 		else if(i%2!=0)
-			_Echelle[i].setPosition(590.f , 4.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
+			_Echelle[i].setPosition(590.f , -25.f + BLOCK_SPACE * (i + 1) + _sizeBlock.y );
 		else
-			_Echelle[i].setPosition(310.f ,5.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
+			_Echelle[i].setPosition(310.f ,-25.f+BLOCK_SPACE * (i + 1) + _sizeBlock.y);
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Echelle[i];
