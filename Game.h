@@ -4,7 +4,8 @@
 #define BLOCK_COUNT_X 8
 #define BLOCK_COUNT_Y 6
 #define BLOCK_SPACE 110.f
-#define FIRST_SPACE 300.f
+#define PIECE_COUNT_X 3
+#define PIECE_COUNT_Y 6
 
 class Game
 {
@@ -82,7 +83,7 @@ private:
 	sf::Vector2u _sizePrincesse;
 
 	sf::Texture _TexturePiece;
-	sf::Sprite	_Piece;
+	sf::Sprite	_Piece[PIECE_COUNT_X][PIECE_COUNT_Y];
 	sf::Font	_FontPiece;
 	sf::Vector2u _sizePiece;
 

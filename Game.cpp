@@ -147,16 +147,38 @@ Game::Game()
 
 	//Draw piece
 	_TexturePiece.loadFromFile("Media/Textures/piece.png"); 
-	_Piece.setTexture(_TexturePiece);
+	_sizePiece = _TextureBlock.getSize();
 
-	_Piece.setPosition(380.f, 6 * BLOCK_SPACE - _TexturePiece.getSize().y);
+	for (int i = 0; i < PIECE_COUNT_X; i++)
+	{
+		for (int j = 1; j < PIECE_COUNT_Y; j++)
+		{
+			_Piece[i][j].setTexture(_TexturePiece);
+			if (j == 1) {
+				if (i > 0 && i <= 3) {
+					_Piece[i][j].setPosition(100.f + 70.f * (i*3+2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
+				}
+				else
+					continue;
+			}
+			else if (j % 2 != 0) {
+				_Piece[i][j].setPosition(100.f + 70.f * (i*3 + 2), -60.f + BLOCK_SPACE * (j + 1) + (i * 3 + 2) * 3.f);
+			}
+			else {
+				_Piece[i][j].setPosition(170.f + 70.f * (i*3 + 1), -30.f + BLOCK_SPACE * (j + 1) - (i * 3 + 2) * 3.f);
+			}
 
-	std::shared_ptr<Entity> piece = std::make_shared<Entity>();
-	piece->m_sprite = _Piece;
-	piece->m_type = EntityType::piece;
-	piece->m_size = _TexturePiece.getSize();
-	piece->m_position = _Piece.getPosition();
-	EntityManager::m_Entities.push_back(piece);
+			std::shared_ptr<Entity> piece = std::make_shared<Entity>();
+			piece->m_sprite = _Piece[i][j];
+			piece->m_type = EntityType::piece;
+			piece->m_size = _TexturePiece.getSize();
+			piece->m_position = _Piece[i][j].getPosition();
+			EntityManager::m_Entities.push_back(piece);
+		}
+	}
+
+
+
 	
 
 	// Draw Statistic Font 
@@ -428,7 +450,6 @@ void Game::DisplayGameOver()
 		mText.setString("GAME OVER");
 		isGameOver = true;
 	}
-
 }
 void Game::HandleCollisionPrincessePlayer()
 {
@@ -484,8 +505,15 @@ void Game::HandleCollisionBarilPlayer()
 		if (boundBaril.intersects(boundPlayer) == true)
 		{
 			live --;
+			score -= 50;
 			Baril->m_enabled = false;
-			DisplayGameOver();
+			sf::Vector2f posMario;
+			posMario.x = 100.f + 70.f;
+			posMario.y = -5.f + BLOCK_SPACE * 6 - _sizeMario.y;
+
+			mPlayer.setPosition(posMario);
+
+
 			goto end;
 		}
 	}
