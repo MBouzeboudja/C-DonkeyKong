@@ -246,7 +246,9 @@ void Game::run()
 			timeSinceLastUpdate -= TimePerFrame;
 
 			processEvents();
-			update(TimePerFrame);
+			if (isWin == false) {
+				update(TimePerFrame);
+			}
 		}
 
 		updateStatistics(elapsedTime);
