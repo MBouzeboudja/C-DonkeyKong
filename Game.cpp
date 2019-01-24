@@ -283,16 +283,16 @@ void Game::update(sf::Time elapsedTime)
 	sf::Vector2f movement(0.f, 0.f);
 
 
-	if (mIsMovingLeft) {
-		movement.x -= PlayerSpeed;
-		movement.y -= 3.8;
-	}
-	if (mIsMovingRight) {
-		movement.x += PlayerSpeed;
-		movement.y += 3.8;
-	}
 
-	
+		if (mIsMovingLeft) {
+			movement.x -= PlayerSpeed;
+			movement.y -= 3.8;
+		}
+		if (mIsMovingRight) {
+			movement.x += PlayerSpeed;
+			movement.y += 3.8;
+		}
+
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
@@ -306,14 +306,14 @@ void Game::update(sf::Time elapsedTime)
 			sf::FloatRect boundEchelle;
 			boundEchelle = entity->m_sprite.getGlobalBounds();
 
-			sf::FloatRect boundPlayer;
+			sf::FloatRect boundPlayerTop;
 			if (EntityManager::GetPlayer() != NULL) {
-				boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+				boundPlayerTop = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-				if (mIsMovingUp && boundPlayer.intersects(boundEchelle)) {
+				if (mIsMovingUp && boundPlayerTop.intersects(boundEchelle)) {
 					movement.y -= PlayerSpeed;
 				}
-				if (mIsMovingDown && boundPlayer.intersects(boundEchelle)) {
+				if (mIsMovingDown && boundPlayerTop.intersects(boundEchelle)) {
 					movement.y += PlayerSpeed;
 				}
 			}
@@ -556,7 +556,7 @@ end:
 void Game::HandleBarilCreate()
 {
 	pos = pos + 5.f;
-	if (pos == 1300.f) {
+	if (pos == 1600.f) {
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
 		sw->m_sprite.setTexture(_TextureBaril);
 		sw->m_sprite.setPosition(380.f, 2 * BLOCK_SPACE - _TextureBaril.getSize().y);
@@ -641,13 +641,13 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		}
 
 		if (mIsJump== true) {
-			sf::Time elapsed2 = clock.getElapsedTime();
+			/*sf::Time elapsed2 = clock.getElapsedTime();
 			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
 				EntityManager::GetPlayer()->m_sprite.setPosition(
 					EntityManager::GetPlayer()->m_sprite.getPosition().x,
 					EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
 				);
-			}
+			}*/
 			return;
 		}
 
