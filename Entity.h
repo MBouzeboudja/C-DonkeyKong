@@ -5,7 +5,6 @@ enum EntityType
 	player,
 	block,
 	echelle,
-	lady, 
 	Kong,
 	Baril,
 	baril,

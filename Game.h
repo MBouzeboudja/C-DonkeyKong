@@ -30,7 +30,7 @@ private:
 	void HandleCollisionPrincessePlayer();
 	void DisplayWin();
 	void HandleScoreLive();
-	void HandleCollisionPiecePlayer();
+	void HandleCollisionPiecePlayer(sf::Time elapsedTime);
 
 
 private:
@@ -48,9 +48,6 @@ private:
 	sf::Text	mScore;
 	sf::Text	mLive;
 
-	sf::Texture mTextureLady;
-	sf::Sprite mLady;
-
 
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;
@@ -63,6 +60,7 @@ private:
 	float pos = 0.f;
 	int live;
 	int score;
+	bool canMoveVertical;
 
 
 	sf::Texture	_TextureEchelle;
@@ -93,7 +91,6 @@ private:
 
 	sf::Texture _TextureBaril;
 	sf::Sprite	_Baril;
-	sf::Sprite	_Piece;
-	sf::Vector2u _sizeLady;
+	//sf::Sprite	_Piece;
 };
 

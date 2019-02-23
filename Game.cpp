@@ -10,8 +10,6 @@ Game::Game()
 	: mWindow(sf::VideoMode(1000, 1000), "Donkey Kong 1981", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
-	, mLady()
-	, mTextureLady()
 	, mFont()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
@@ -20,6 +18,7 @@ Game::Game()
 	, mIsMovingDown(false)
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
+	, canMoveVertical(false)
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
@@ -136,7 +135,7 @@ Game::Game()
 	mPlayer.setTexture(mTexture);
 	sf::Vector2f posMario;
 	posMario.x = 170.f;
-	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y - 5.f;
+	posMario.y = BLOCK_SPACE * 6 - _sizeMario.y - 5.f;
 
 	mPlayer.setPosition(posMario);
 
@@ -216,29 +215,12 @@ Game::Game()
 	mScore.setPosition(20.f, 100.f);
 	mScore.setCharacterSize(20);
 	mScore.setString(std::to_string(score));
-
-	// Draw Lady
-	mTextureLady.loadFromFile("Media/Textures/lady.png");
-	_sizeLady = mTextureLady.getSize();
-	mLady.setTexture(mTextureLady);
-	sf::Vector2f posLady;
-	posLady.x = 270.f;
-	posLady.y = BLOCK_SPACE - _sizeLady.y;
 	//Draw live
 	mLive.setFillColor(sf::Color::Green);
 	mLive.setFont(mFont);
 	mLive.setPosition(20.f, 130.f);
 	mLive.setCharacterSize(20);
 	mLive.setString(std::to_string(live));
-
-	mLady.setPosition(posLady);
-
-	std::shared_ptr<Entity> lady = std::make_shared<Entity>();
-	lady->m_sprite = mLady;
-	lady->m_type = EntityType::lady;	
-	lady->m_size = mTextureLady.getSize();
-	lady->m_position = mLady.getPosition();
-	EntityManager::m_Entities.push_back(lady);
 
 }
 
@@ -248,8 +230,8 @@ void Game::ResetGame()
 	_sizeMario = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
 	sf::Vector2f posMario;
-	posMario.x = 100.f + 70.f;
-	posMario.y = -5.f + BLOCK_SPACE * 6 - _sizeMario.y;
+	posMario.x = 170.f;
+	posMario.y = BLOCK_SPACE * 6 - _sizeMario.y - 5.f;
 
 	mPlayer.setPosition(posMario);
 
@@ -311,52 +293,62 @@ void Game::processEvents()
 void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
-
-
-	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+	if(player == NULL || !player->m_enabled)
 	{
-		if (entity->m_enabled == false)
+		return;
+	}
+	canMoveVertical = false;
+	if (mIsMovingDown || mIsMovingUp) {
+		for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 		{
-			continue;
-		}
+			if (entity->m_enabled == false)
+			{
+				continue;
+			}
+			if (entity->m_type == EntityType::echelle)
+			{
+				sf::FloatRect boundEchelle;
+				boundEchelle = entity->m_sprite.getGlobalBounds();
 
-		if (entity->m_type == EntityType::echelle)
-		{
-			sf::FloatRect boundEchelle;
-			boundEchelle = entity->m_sprite.getGlobalBounds();
+				sf::FloatRect boundPlayer;
+				boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
-			sf::FloatRect boundPlayerTop;
-			if (EntityManager::GetPlayer() != NULL) {
-				boundPlayerTop = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
-
-				if (mIsMovingUp && boundPlayerTop.intersects(boundEchelle)) {
-					movement.y -= PlayerSpeed;
-				}
-				if (mIsMovingDown && boundPlayerTop.intersects(boundEchelle)) {
-					movement.y += PlayerSpeed;
+				if (boundPlayer.intersects(boundEchelle)) {
+					canMoveVertical = true;
 				}
 			}
-
+			if (entity->m_type != EntityType::player)
+			{
+				continue;
+			}
 		}
-		if (entity->m_type != EntityType::player)
-		{
-			continue;
-		}
-
-		sf::Vector2f mov = entity->m_sprite.getPosition();
-	
-		if (mov.x < 170.f) {
-			entity->m_sprite.move(1.f, 0.f);
-			mIsMovingLeft = false;
-		}
-		if (mov.x > 760.f) {
-			entity->m_sprite.move(-1.f, 0.f);
-			mIsMovingRight = false;
-		}
-		else entity->m_sprite.move(movement * elapsedTime.asSeconds());
-		
-		
 	}
+
+	sf::Vector2f mov = player->m_sprite.getPosition();
+	if (mIsMovingUp && canMoveVertical)
+		movement.y -= PlayerSpeed;
+	if (mIsMovingDown && canMoveVertical)
+		movement.y += PlayerSpeed;
+	if (mIsMovingLeft) {
+		movement.x -= PlayerSpeed;
+		movement.y -= 3.7;
+	}
+	if (mIsMovingRight) {
+		movement.x += PlayerSpeed;
+		movement.y += 3.7;
+	}
+	if (mov.x < 170.f) {
+		player->m_sprite.move(1.f, 0.f);
+		mIsMovingLeft = false;
+	}
+	if (mov.x > 760.f) {
+		player->m_sprite.move(-1.f, 0.f);
+		mIsMovingRight = false;
+	}
+	else player->m_sprite.move(movement * elapsedTime.asSeconds());
+	
+		
 }
 
 void Game::render()
@@ -411,7 +403,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleBarilCreate();
 		HandleCollisionBarilPlayer();
 		HandleCollisionPrincessePlayer();
-		HandleCollisionPiecePlayer();
+		HandleCollisionPiecePlayer(elapsedTime);
 		
 	}
 }
@@ -423,7 +415,7 @@ void Game::HandleScoreLive()
 		mLive.setString("Lives : " + std::to_string(live));
 }
 
-void Game::HandleCollisionPiecePlayer()
+void Game::HandleCollisionPiecePlayer(sf::Time elapsedTime)
 {
 	for (std::shared_ptr<Entity> piece : EntityManager::m_Entities)
 	{
@@ -441,12 +433,21 @@ void Game::HandleCollisionPiecePlayer()
 		boundPiece = piece->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		if (EntityManager::GetPlayer() != NULL) {
+		std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+		if (player != NULL) {
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
 			if (boundPiece.intersects(boundPlayer) == true)
 			{
 				piece->m_enabled = false;
+				// make mario bigger when he make collision with *piece.
+				//TODO: do this below
+				//sf::Vector2f scale = player->m_sprite.getScale();
+				//player->m_sprite.scale(scale.x+0.07, scale.y + 0.07);
+				//sf::Vector2f newPosition;
+				//newPosition.x = player->m_sprite.getPosition().x;
+				//newPosition.y =	player->m_sprite.getPosition().y - 0.1;
+				//player->m_sprite.move(1.f, 0.f);
 				score += 100;
 				goto end;
 			}
@@ -558,9 +559,10 @@ void Game::HandleCollisionBarilPlayer()
 			if (boundBaril.intersects(boundPlayer) == true)
 			{
 				live--;
-				score -= 50;
+				//TODO: décommenter ça et la ligne 565
+				//score -= 50;
 				Baril->m_enabled = false;
-				EntityManager::GetPlayer()->m_enabled = false;
+				//EntityManager::GetPlayer()->m_enabled = false;
 
 				goto end;
 			}
@@ -636,21 +638,28 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 	sf::Clock clock;
 	sf::Time elapsed1;
 
-	if (key == sf::Keyboard::Up)
+	if (key == sf::Keyboard::Up) {
 		mIsMovingUp = isPressed;
-	else if (key == sf::Keyboard::Down)
+		return;
+	}
+	else if (key == sf::Keyboard::Down){
 		mIsMovingDown = isPressed;
-	else if (key == sf::Keyboard::Left)
+		return;
+	}
+	else if (key == sf::Keyboard::Left) {
 		mIsMovingLeft = isPressed;
-	else if (key == sf::Keyboard::Right)
+		return;
+	}
+	else if (key == sf::Keyboard::Right) {
 		mIsMovingRight = isPressed;
+		return;
+	}
 
 	if (key == sf::Keyboard::Space)
 	{
 
 		if (isPressed == false)
 		{
-
 			mIsJump = false;
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
