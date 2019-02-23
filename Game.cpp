@@ -10,6 +10,8 @@ Game::Game()
 	: mWindow(sf::VideoMode(1000, 1000), "Donkey Kong 1981", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
+	, mLady()
+	, mTextureLady()
 	, mFont()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
@@ -58,6 +60,19 @@ Game::Game()
 			se->m_size = _TextureBlock.getSize();
 			se->m_position = _Block[i][j].getPosition();
 			EntityManager::m_Entities.push_back(se);
+
+			//Draw an other bloc in the last raw
+			if(i == (BLOCK_COUNT_X-1) && j == (BLOCK_COUNT_Y-1))
+			{
+				_Block[i+1][j].setTexture(_TextureBlock);
+				_Block[i+1][j].setPosition(170.f + 70.f * (i + 1), -10.f + BLOCK_SPACE * (j + 1) + i * 3.f);
+				std::shared_ptr<Entity> se = std::make_shared<Entity>();
+				se->m_sprite = _Block[i+1][j];
+				se->m_type = EntityType::block;
+				se->m_size = _TextureBlock.getSize();
+				se->m_position = _Block[i+1][j].getPosition();
+				EntityManager::m_Entities.push_back(se);
+			}
 		}
 	}
 	
@@ -90,7 +105,7 @@ Game::Game()
 	_sizeKong = _TextureKong.getSize();
 	_Kong.setTexture(_TextureKong);
 
-	_Kong.setPosition(280.f, BLOCK_SPACE*2 - _sizeKong.y);
+	_Kong.setPosition(220.f,BLOCK_SPACE - _sizeKong.y);
 
 	std::shared_ptr<Entity> kong = std::make_shared<Entity>();
 	kong->m_sprite = _Kong;
@@ -120,8 +135,8 @@ Game::Game()
 	_sizeMario = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
 	sf::Vector2f posMario;
-	posMario.x = 100.f + 70.f;
-	posMario.y = -5.f + BLOCK_SPACE * 6  - _sizeMario.y;
+	posMario.x = 170.f;
+	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y - 5.f;
 
 	mPlayer.setPosition(posMario);
 
@@ -202,6 +217,13 @@ Game::Game()
 	mScore.setCharacterSize(20);
 	mScore.setString(std::to_string(score));
 
+	// Draw Lady
+	mTextureLady.loadFromFile("Media/Textures/lady.png");
+	_sizeLady = mTextureLady.getSize();
+	mLady.setTexture(mTextureLady);
+	sf::Vector2f posLady;
+	posLady.x = 270.f;
+	posLady.y = BLOCK_SPACE - _sizeLady.y;
 	//Draw live
 	mLive.setFillColor(sf::Color::Green);
 	mLive.setFont(mFont);
@@ -209,9 +231,15 @@ Game::Game()
 	mLive.setCharacterSize(20);
 	mLive.setString(std::to_string(live));
 
+	mLady.setPosition(posLady);
 
+	std::shared_ptr<Entity> lady = std::make_shared<Entity>();
+	lady->m_sprite = mLady;
+	lady->m_type = EntityType::lady;	
+	lady->m_size = mTextureLady.getSize();
+	lady->m_position = mLady.getPosition();
+	EntityManager::m_Entities.push_back(lady);
 
-	
 }
 
 void Game::ResetGame()
@@ -285,17 +313,6 @@ void Game::update(sf::Time elapsedTime)
 	sf::Vector2f movement(0.f, 0.f);
 
 
-
-		if (mIsMovingLeft) {
-			movement.x -= PlayerSpeed;
-			movement.y -= 3.8;
-		}
-		if (mIsMovingRight) {
-			movement.x += PlayerSpeed;
-			movement.y += 3.8;
-		}
-
-
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
 		if (entity->m_enabled == false)
@@ -332,7 +349,7 @@ void Game::update(sf::Time elapsedTime)
 			entity->m_sprite.move(1.f, 0.f);
 			mIsMovingLeft = false;
 		}
-		if (mov.x > 690.f) {
+		if (mov.x > 760.f) {
 			entity->m_sprite.move(-1.f, 0.f);
 			mIsMovingRight = false;
 		}

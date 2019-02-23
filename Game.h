@@ -37,7 +37,7 @@ private:
 	static const float		PlayerSpeed;
 	static const sf::Time	TimePerFrame;
 
-	sf::RenderWindow		mWindow;
+	sf::RenderWindow mWindow;
 	sf::Texture	mTexture;
 	sf::Sprite	mPlayer;
 	sf::Font	mFont;
@@ -47,6 +47,10 @@ private:
 	sf::Text	mText;
 	sf::Text	mScore;
 	sf::Text	mLive;
+
+	sf::Texture mTextureLady;
+	sf::Sprite mLady;
+
 
 	std::size_t	mStatisticsNumFrames;
 	bool mIsMovingUp;
@@ -65,7 +69,7 @@ private:
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
 
 	sf::Texture	_TextureBlock;
-	sf::Sprite	_Block[BLOCK_COUNT_X][BLOCK_COUNT_Y];
+	sf::Sprite	_Block[BLOCK_COUNT_X + 1][BLOCK_COUNT_Y];
 
 	sf::Texture	_TextureWeapon;
 	sf::Sprite	_Weapon;
@@ -89,5 +93,7 @@ private:
 
 	sf::Texture _TextureBaril;
 	sf::Sprite	_Baril;
+	sf::Sprite	_Piece;
+	sf::Vector2u _sizeLady;
 };
 
