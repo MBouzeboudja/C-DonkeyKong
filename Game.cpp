@@ -143,7 +143,7 @@ Game::Game()
 	mTexture.setSmooth(false);
 	sf::Vector2f posMario;
 	posMario.x = 170.f;
-	posMario.y = BLOCK_SPACE * 6 - 50.f -_sizeMario.y;
+	posMario.y = BLOCK_SPACE * 6 - 45.f -_sizeMario.y;
 
 	mPlayer.setPosition(posMario);
 
@@ -347,14 +347,28 @@ void Game::update(sf::Time elapsedTime)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft) {
 		movement.x -= PlayerSpeed;
-		if (LevelMario != -1) {
-			movement.y = (LevelMario % 2 == 0) ? movement.y += MOVE_OFFSET_y : movement.y -= MOVE_OFFSET_y;
+		if (LevelMario > 0 ) {
+			if(LevelMario % 2 == 0)
+			{
+				movement.y += MOVE_OFFSET_y;
+			}	
+			if(LevelMario % 2 != 0)
+			{
+				movement.y -= MOVE_OFFSET_y;;
+			}
 		}
 	}
 	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
-		if (LevelMario != -1) {
-			movement.y = (LevelMario % 2 == 0) ? movement.y -= MOVE_OFFSET_y : movement.y += MOVE_OFFSET_y;
+		if (LevelMario > 0) {
+			if (LevelMario % 2 == 0)
+			{
+				movement.y -= MOVE_OFFSET_y;
+			}
+			if (LevelMario % 2 != 0)
+			{
+				movement.y += MOVE_OFFSET_y;;
+			}
 		}
 	}
 	if(mov.x > 550 && LevelMario == 0)
@@ -669,7 +683,10 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	sf::Clock clock;
 	sf::Time elapsed1;
-
+	if (!isPressed)
+	{
+		
+	}
 	if (key == sf::Keyboard::Up) {
 		mIsMovingUp = isPressed;
 		if (moveVertical && isPressed) {
@@ -703,7 +720,7 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 			moveHorizontal = 0;
 		}else
 		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(38, 0, 16, 16));
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(120, 0, 16, 16));
 			moveHorizontal = 1;
 		}
 		return;
@@ -716,46 +733,42 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		}
 		else
 		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(240, 0, 16, 16));
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 0, 16, 16));
 			moveHorizontal = 1;
 		}
 		return;
 	}
 
-	{
+	
 
-		if (isPressed == false)
-		{
-			mIsJump = false;
+	if (isPressed == false)
+	{
+		mIsJump = false;
+		EntityManager::GetPlayer()->m_sprite.setPosition(
+			EntityManager::GetPlayer()->m_sprite.getPosition().x,
+			EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
+		);
+		return;
+	}
+
+	if (mIsJump == true) {
+		/*sf::Time elapsed2 = clock.getElapsedTime();
+		if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
 				EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
 			);
-			return;
-		}
-
-		if (mIsJump == true) {
-			/*sf::Time elapsed2 = clock.getElapsedTime();
-			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
-				EntityManager::GetPlayer()->m_sprite.setPosition(
-					EntityManager::GetPlayer()->m_sprite.getPosition().x,
-					EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
-				);
-			}*/
-			return;
-		}
-
-		elapsed1 = clock.getElapsedTime();
-		EntityManager::GetPlayer()->m_sprite.setPosition(
-			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
-		);
-
-
-		mIsJump = true;
-
-
+		}*/
+		return;
 	}
+
+	elapsed1 = clock.getElapsedTime();
+	EntityManager::GetPlayer()->m_sprite.setPosition(
+		EntityManager::GetPlayer()->m_sprite.getPosition().x,
+		EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+	);
+
+	mIsJump = true;
 }
 
 int Game::getMarioLevel()
