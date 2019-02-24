@@ -7,7 +7,7 @@ const float Game::PlayerSpeed = 80.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-	: mWindow(sf::VideoMode(1000, 1000), "Donkey Kong 1981", sf::Style::Close)
+	: mWindow(sf::VideoMode(1000, 800), "Donkey Kong 1981", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
 	, mFont()
@@ -491,9 +491,8 @@ void Game::HandleCollisionPiecePlayer(sf::Time elapsedTime)
 			{
 				piece->m_enabled = false;
 				// make mario bigger when he make collision with *piece.
-				//TODO: do this below
-				//sf::Vector2f scale = player->m_sprite.getScale();
-				//player->m_sprite.scale(scale.x + 0.001f, scale.y);
+			   // TODO: do this below
+				player->m_sprite.scale(1.04f, 1.f);
 				score += 100;
 				goto end;
 			}
@@ -739,36 +738,37 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		return;
 	}
 
-	
+	else if (key == sf::Keyboard::Space) {
 
-	if (isPressed == false)
-	{
-		mIsJump = false;
-		EntityManager::GetPlayer()->m_sprite.setPosition(
-			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
-		);
-		return;
-	}
-
-	if (mIsJump == true) {
-		/*sf::Time elapsed2 = clock.getElapsedTime();
-		if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
+		if (isPressed == false)
+		{
+			mIsJump = false;
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
 				EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
 			);
-		}*/
-		return;
+			return;
+		}
+
+		if (mIsJump == true) {
+			/*sf::Time elapsed2 = clock.getElapsedTime();
+			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
+				EntityManager::GetPlayer()->m_sprite.setPosition(
+					EntityManager::GetPlayer()->m_sprite.getPosition().x,
+					EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
+				);
+			}*/
+			return;
+		}
+
+		elapsed1 = clock.getElapsedTime();
+		EntityManager::GetPlayer()->m_sprite.setPosition(
+			EntityManager::GetPlayer()->m_sprite.getPosition().x,
+			EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+		);
+
+		mIsJump = true;
 	}
-
-	elapsed1 = clock.getElapsedTime();
-	EntityManager::GetPlayer()->m_sprite.setPosition(
-		EntityManager::GetPlayer()->m_sprite.getPosition().x,
-		EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
-	);
-
-	mIsJump = true;
 }
 
 int Game::getMarioLevel()
