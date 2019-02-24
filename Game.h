@@ -6,6 +6,7 @@
 #define BLOCK_SPACE 110.f
 #define PIECE_COUNT_X 3
 #define PIECE_COUNT_Y 6
+#define MOVE_OFFSET_y 3,7 
 
 class Game
 {
@@ -31,9 +32,12 @@ private:
 	void DisplayWin();
 	void HandleScoreLive();
 	void HandleCollisionPiecePlayer(sf::Time elapsedTime);
+	void HandlePieceMoves();
+	int  getMarioLevel();
 
 
 private:
+	float marioMovement;
 	static const float		PlayerSpeed;
 	static const sf::Time	TimePerFrame;
 
@@ -61,6 +65,9 @@ private:
 	int live;
 	int score;
 	bool canMoveVertical;
+	int moveHorizontal;
+	int moveVertical;
+
 
 
 	sf::Texture	_TextureEchelle;

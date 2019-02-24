@@ -29,3 +29,22 @@ std::shared_ptr<Entity> EntityManager::GetPlayer()
 
 	return nullptr;
 }
+
+float EntityManager::GetClosestBlocFromPlayer(std::shared_ptr<Entity> player)
+{
+	const float playerPositionY = player->m_sprite.getPosition().y;
+	float closestBlocFromPlayerY = 900000;
+
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_type != EntityType::block)
+		{
+			continue;
+		}
+		if (std::abs(entity->m_sprite.getPosition().y - playerPositionY) < abs(playerPositionY - closestBlocFromPlayerY)) {
+			closestBlocFromPlayerY = entity->m_sprite.getPosition().y;
+		}
+	}
+	std::cout << closestBlocFromPlayerY;
+	return closestBlocFromPlayerY;
+}

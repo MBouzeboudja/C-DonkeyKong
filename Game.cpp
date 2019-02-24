@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "EntityManager.h"
 
-const float Game::PlayerSpeed = 100.f;
+const float Game::PlayerSpeed = 80.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
@@ -19,6 +19,8 @@ Game::Game()
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 	, canMoveVertical(false)
+	, moveHorizontal(1)
+	, moveVertical(1)
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
@@ -29,6 +31,7 @@ Game::Game()
 	// Draw blocks
 
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
+	_TextureBlock.setSmooth(true);
 	_sizeBlock = _TextureBlock.getSize();
 
 	for (int i = 0; i < BLOCK_COUNT_X; i++)
@@ -79,9 +82,9 @@ Game::Game()
 	// Draw Echelles
 
 	_TextureEchelle.loadFromFile("Media/Textures/Echelle.png");
-
+	_TextureEchelle.setSmooth(true);
 	for (int i = 0; i < ECHELLE_COUNT; i++)
-	{
+	{	
 		_Echelle[i].setTexture(_TextureEchelle);
 		if(i==0) _Echelle[i].setPosition(540.f, -14.f+BLOCK_SPACE + _sizeBlock.y);
 		else if(i%2!=0)
@@ -100,11 +103,12 @@ Game::Game()
 
 	// Draw Kong
 
-	_TextureKong.loadFromFile("Media/Textures/Kong.png"); // Mario_small.png");
+	_TextureKong.loadFromFile("Media/Textures/Kong.png");
 	_sizeKong = _TextureKong.getSize();
+	_TextureKong.setSmooth(true);
 	_Kong.setTexture(_TextureKong);
 
-	_Kong.setPosition(220.f,BLOCK_SPACE - _sizeKong.y);
+	_Kong.setPosition(280.f,BLOCK_SPACE * 2 - _sizeKong.y);
 
 	std::shared_ptr<Entity> kong = std::make_shared<Entity>();
 	kong->m_sprite = _Kong;
@@ -116,6 +120,7 @@ Game::Game()
 	// Draw Princesse
 
 	_TexturePrincesse.loadFromFile("Media/Textures/princesse.png"); // Mario_small.png");
+	_TexturePrincesse.setSmooth(true);
 	_sizePrincesse = _TexturePrincesse.getSize();
 	_Princesse.setTexture(_TexturePrincesse);
 
@@ -130,12 +135,15 @@ Game::Game()
 
 	// Draw Mario
 
-	mTexture.loadFromFile("Media/Textures/Mario_small_transparent.png"); // Mario_small.png");
-	_sizeMario = mTexture.getSize();
+	mTexture.loadFromFile("Media/Textures/MarioTextures.png"); // Mario_small.png");
+	_sizeMario = sf::Vector2u(12,16);
 	mPlayer.setTexture(mTexture);
+	mPlayer.setTextureRect(sf::IntRect(160, 0, 12, 16));
+	mPlayer.setScale(3, 3);
+	mTexture.setSmooth(false);
 	sf::Vector2f posMario;
 	posMario.x = 170.f;
-	posMario.y = BLOCK_SPACE * 6 - _sizeMario.y - 5.f;
+	posMario.y = BLOCK_SPACE * 6 - 50.f -_sizeMario.y;
 
 	mPlayer.setPosition(posMario);
 
@@ -260,13 +268,10 @@ void Game::run()
 				update(TimePerFrame);
 			}
 		}
-
 		updateStatistics(elapsedTime);
 		render();
 	}
 }
-
-
 
 void Game::processEvents()
 {
@@ -292,6 +297,11 @@ void Game::processEvents()
 
 void Game::update(sf::Time elapsedTime)
 {
+	std::shared_ptr<Entity> entity = EntityManager::GetPlayer();
+	if(entity == nullptr)
+	{
+		return;
+	}
 	sf::Vector2f movement(0.f, 0.f);
 	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
 	if(player == NULL || !player->m_enabled)
@@ -308,13 +318,17 @@ void Game::update(sf::Time elapsedTime)
 			}
 			if (entity->m_type == EntityType::echelle)
 			{
+				sf::Vector2f marioOrigin = EntityManager::GetPlayer()->m_sprite.getOrigin();
 				sf::FloatRect boundEchelle;
 				boundEchelle = entity->m_sprite.getGlobalBounds();
-
+				boundEchelle.width -= 16;
+				boundEchelle.left += 8;
 				sf::FloatRect boundPlayer;
 				boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
+				boundPlayer.width -= 46;
+				boundPlayer.left += 23;
 
-				if (boundPlayer.intersects(boundEchelle)) {
+				if (boundEchelle.intersects(boundPlayer)) {
 					canMoveVertical = true;
 				}
 			}
@@ -324,30 +338,53 @@ void Game::update(sf::Time elapsedTime)
 			}
 		}
 	}
-
+	int LevelMario = getMarioLevel();
 	sf::Vector2f mov = player->m_sprite.getPosition();
+	std::cout << player->m_sprite.getPosition().y << "\n";
 	if (mIsMovingUp && canMoveVertical)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown && canMoveVertical)
 		movement.y += PlayerSpeed;
 	if (mIsMovingLeft) {
 		movement.x -= PlayerSpeed;
-		movement.y -= 3.7;
+		if (LevelMario != -1) {
+			movement.y = (LevelMario % 2 == 0) ? movement.y += MOVE_OFFSET_y : movement.y -= MOVE_OFFSET_y;
+		}
 	}
 	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
-		movement.y += 3.7;
+		if (LevelMario != -1) {
+			movement.y = (LevelMario % 2 == 0) ? movement.y -= MOVE_OFFSET_y : movement.y += MOVE_OFFSET_y;
+		}
 	}
-	if (mov.x < 170.f) {
-		player->m_sprite.move(1.f, 0.f);
+	if(mov.x > 550 && LevelMario == 0)
+	{
+		entity->m_sprite.move(-1.f, 0.f);
+		mIsMovingRight = false;
+		return;
+	}
+
+	if (mov.x < 170.f && LevelMario % 2 !=0) {
+		entity->m_sprite.move(1.f, 0.f);
 		mIsMovingLeft = false;
+		return;
+	}
+	if (mov.x < 240.f && LevelMario % 2 == 0) {
+		entity->m_sprite.move(1.f, 0.f);
+		mIsMovingLeft = false;
+		return;
+	}
+	if (mov.x > 680.f && (LevelMario == 1 || LevelMario == 3)) {
+		entity->m_sprite.move(-1.f, 0.f);
+		mIsMovingRight = false;
+		return;
 	}
 	if (mov.x > 760.f) {
-		player->m_sprite.move(-1.f, 0.f);
+		entity->m_sprite.move(-1.f, 0.f);
 		mIsMovingRight = false;
+		return;
 	}
-	else player->m_sprite.move(movement * elapsedTime.asSeconds());
-	
+	else entity->m_sprite.move(movement * elapsedTime.asSeconds());
 		
 }
 
@@ -436,18 +473,13 @@ void Game::HandleCollisionPiecePlayer(sf::Time elapsedTime)
 		std::shared_ptr<Entity> player = EntityManager::GetPlayer();
 		if (player != NULL) {
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
-
 			if (boundPiece.intersects(boundPlayer) == true)
 			{
 				piece->m_enabled = false;
 				// make mario bigger when he make collision with *piece.
 				//TODO: do this below
 				//sf::Vector2f scale = player->m_sprite.getScale();
-				//player->m_sprite.scale(scale.x+0.07, scale.y + 0.07);
-				//sf::Vector2f newPosition;
-				//newPosition.x = player->m_sprite.getPosition().x;
-				//newPosition.y =	player->m_sprite.getPosition().y - 0.1;
-				//player->m_sprite.move(1.f, 0.f);
+				//player->m_sprite.scale(scale.x + 0.001f, scale.y);
 				score += 100;
 				goto end;
 			}
@@ -558,8 +590,8 @@ void Game::HandleCollisionBarilPlayer()
 
 			if (boundBaril.intersects(boundPlayer) == true)
 			{
-				live--;
-				//TODO: décommenter ça et la ligne 565
+				//live--;
+				//TODO: dï¿½commenter ï¿½a et la ligne 565
 				//score -= 50;
 				Baril->m_enabled = false;
 				//EntityManager::GetPlayer()->m_enabled = false;
@@ -640,22 +672,56 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 	if (key == sf::Keyboard::Up) {
 		mIsMovingUp = isPressed;
+		if (moveVertical && isPressed) {
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
+			moveVertical = 0;
+		}
+		else
+		{
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
+			moveVertical = 1;
+		}
 		return;
 	}
-	else if (key == sf::Keyboard::Down){
+	else if (key == sf::Keyboard::Down) {
 		mIsMovingDown = isPressed;
+		if (moveVertical  && isPressed) {
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
+			moveVertical = 0;
+		}
+		else
+		{
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
+			moveVertical = 1;
+		}
 		return;
 	}
 	else if (key == sf::Keyboard::Left) {
 		mIsMovingLeft = isPressed;
+		if (moveHorizontal && isPressed) {
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(80, 0, 16, 16));
+			moveHorizontal = 0;
+		}else
+		{
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(38, 0, 16, 16));
+			moveHorizontal = 1;
+		}
 		return;
 	}
 	else if (key == sf::Keyboard::Right) {
 		mIsMovingRight = isPressed;
+		if (moveHorizontal && isPressed) {
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(200, 0, 16, 16));
+			moveHorizontal = 0;
+		}
+		else
+		{
+			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(240, 0, 16, 16));
+			moveHorizontal = 1;
+		}
 		return;
 	}
 
-	if (key == sf::Keyboard::Space)
 	{
 
 		if (isPressed == false)
@@ -668,7 +734,7 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 			return;
 		}
 
-		if (mIsJump== true) {
+		if (mIsJump == true) {
 			/*sf::Time elapsed2 = clock.getElapsedTime();
 			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
 				EntityManager::GetPlayer()->m_sprite.setPosition(
@@ -681,13 +747,47 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 		elapsed1 = clock.getElapsedTime();
 		EntityManager::GetPlayer()->m_sprite.setPosition(
-				EntityManager::GetPlayer()->m_sprite.getPosition().x,
-				EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+			EntityManager::GetPlayer()->m_sprite.getPosition().x,
+			EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
 		);
 
 
 		mIsJump = true;
-		
+
 
 	}
 }
+
+int Game::getMarioLevel()
+{
+	float positionY = EntityManager::GetPlayer()->m_sprite.getPosition().y;
+	if(positionY < 100)
+	{
+		return 0;
+	}
+	if(positionY < 185 && positionY > 163)
+	{
+		return 1;
+	}
+	else if(positionY < 325 && positionY > 265)
+	{
+		return 2;
+	}
+	else if (positionY < 410 && positionY > 375)
+	{
+		return 3;
+	}
+	else if (positionY < 520 && positionY > 475)
+	{
+		return 4;
+	}
+	else if (positionY < 630 && positionY > 585)
+	{
+		return 5;
+	}
+	else return -1;
+	
+}
+
+
+
