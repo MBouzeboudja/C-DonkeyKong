@@ -321,7 +321,10 @@ void Game::update(sf::Time elapsedTime)
 				sf::Vector2f marioOrigin = EntityManager::GetPlayer()->m_sprite.getOrigin();
 				sf::FloatRect boundEchelle;
 				boundEchelle = entity->m_sprite.getGlobalBounds();
-				boundEchelle.width -= 16;
+				boundEchelle.width -= 18;
+				if (mIsMovingDown) {
+					boundEchelle.top -= 48;
+				}
 				boundEchelle.left += 8;
 				sf::FloatRect boundPlayer;
 				boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
@@ -345,7 +348,7 @@ void Game::update(sf::Time elapsedTime)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown && canMoveVertical)
 		movement.y += PlayerSpeed;
-	if (mIsMovingLeft) {
+	if (mIsMovingLeft && getMarioLevel() != -1) {
 		movement.x -= PlayerSpeed;
 		if (LevelMario > 0 ) {
 			if(LevelMario % 2 == 0)
@@ -358,7 +361,7 @@ void Game::update(sf::Time elapsedTime)
 			}
 		}
 	}
-	if (mIsMovingRight) {
+	if (mIsMovingRight && getMarioLevel() != -1) {
 		movement.x += PlayerSpeed;
 		if (LevelMario > 0) {
 			if (LevelMario % 2 == 0)
@@ -786,15 +789,15 @@ int Game::getMarioLevel()
 	{
 		return 2;
 	}
-	else if (positionY < 410 && positionY > 375)
+	else if (positionY < 410 && positionY > 37)
 	{
 		return 3;
 	}
-	else if (positionY < 520 && positionY > 475)
+	else if (positionY < 520 && positionY > 487)
 	{
 		return 4;
 	}
-	else if (positionY < 630 && positionY > 585)
+	else if (positionY < 630 && positionY > 597)
 	{
 		return 5;
 	}
