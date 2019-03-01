@@ -48,3 +48,41 @@ float EntityManager::GetClosestBlocFromPlayer(std::shared_ptr<Entity> player)
 	std::cout << closestBlocFromPlayerY;
 	return closestBlocFromPlayerY;
 }
+
+std::shared_ptr<Entity> EntityManager::GetKong()
+{
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (entity->m_type == EntityType::Kong)
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+std::shared_ptr<Entity> EntityManager::GetBarile()
+{
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (entity->m_type == EntityType::Baril)
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}
+
+
+

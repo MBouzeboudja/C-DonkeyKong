@@ -7,7 +7,7 @@ enum EntityType
 	echelle,
 	Kong,
 	Baril,
-	baril,
+	barilStatic,
 	princesse,
 	piece,
 };

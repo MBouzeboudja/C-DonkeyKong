@@ -7,6 +7,8 @@ public:
 	EntityManager();
 	~EntityManager();
 	static std::shared_ptr<Entity> GetPlayer();
+	static std::shared_ptr<Entity> GetKong();
+	static std::shared_ptr<Entity> GetBarile();
 	static float GetClosestBlocFromPlayer(std::shared_ptr<Entity>);
 
 public:

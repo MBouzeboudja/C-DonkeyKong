@@ -21,6 +21,7 @@ Game::Game()
 	, canMoveVertical(false)
 	, moveHorizontal(1)
 	, moveVertical(1)
+	, kong_position(1)
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
@@ -103,12 +104,14 @@ Game::Game()
 
 	// Draw Kong
 
-	_TextureKong.loadFromFile("Media/Textures/Kong.png");
+	_TextureKong.loadFromFile("Media/Textures/test.png");
 	_sizeKong = _TextureKong.getSize();
 	_TextureKong.setSmooth(true);
 	_Kong.setTexture(_TextureKong);
+	_Kong.setTextureRect(sf::IntRect(252, 7, 48, 35));
+	_Kong.setScale(2, 2);
 
-	_Kong.setPosition(280.f,BLOCK_SPACE * 2 - _sizeKong.y);
+	_Kong.setPosition(260.f, BLOCK_SPACE * 2 - 77);
 
 	std::shared_ptr<Entity> kong = std::make_shared<Entity>();
 	kong->m_sprite = _Kong;
@@ -157,15 +160,22 @@ Game::Game()
 	//Draw Baril
 	_TextureBaril.loadFromFile("Media/Textures/Baril.png");
 	_Baril.setTexture(_TextureBaril);
+	
 
-	_Baril.setPosition(380.f, 2*BLOCK_SPACE - _TextureBaril.getSize().y);
-
-	std::shared_ptr<Entity> Baril = std::make_shared<Entity>();
-	Baril->m_sprite = _Baril;
-	Baril->m_type = EntityType::Baril;
-	Baril->m_size = _TextureBaril.getSize();
-	Baril->m_position = _Baril.getPosition();
-	EntityManager::m_Entities.push_back(Baril);
+	//DRaw baril static 
+	_TextureBarilStatic.loadFromFile("Media/Textures/barilSatatic.png");
+	_BarilStatic.setTexture(_TextureBarilStatic);
+	_BarilStatic.setTextureRect(sf::IntRect(112, 263, 12, 20));
+	_BarilStatic.setScale(4,4);
+	_TextureBarilStatic.setSmooth(false);
+	sf::Vector2f posBarilStatic;
+	_BarilStatic.setPosition(205.f, BLOCK_SPACE * 2 - 75);
+	std::shared_ptr<Entity> barilStatic = std::make_shared<Entity>();
+	barilStatic->m_sprite = _BarilStatic;
+	barilStatic->m_type = EntityType::barilStatic;
+	barilStatic->m_size = _TextureBarilStatic.getSize();
+	barilStatic->m_position = _BarilStatic.getPosition();
+	EntityManager::m_Entities.push_back(barilStatic);
 
 	//Draw piece
 	_TexturePiece.loadFromFile("Media/Textures/piece.png"); 
@@ -205,10 +215,6 @@ Game::Game()
 		}
 	}
 
-
-
-	
-
 	// Draw Statistic Font 
 
 	mFont.loadFromFile("Media/Sansation.ttf");
@@ -229,17 +235,20 @@ Game::Game()
 	mLive.setPosition(20.f, 130.f);
 	mLive.setCharacterSize(20);
 	mLive.setString(std::to_string(live));
+	Sound(mIntroSoundPath);
 
 }
 
 void Game::ResetGame()
 {
 
-	_sizeMario = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
+	mPlayer.setTextureRect(sf::IntRect(160, 0, 12, 16));
+	mPlayer.setScale(3, 3);
+	mTexture.setSmooth(false);
 	sf::Vector2f posMario;
 	posMario.x = 170.f;
-	posMario.y = BLOCK_SPACE * 6 - _sizeMario.y - 5.f;
+	posMario.y = BLOCK_SPACE * 6 - 45.f - _sizeMario.y;
 
 	mPlayer.setPosition(posMario);
 
@@ -254,6 +263,7 @@ void Game::ResetGame()
 void Game::run()
 {
 	sf::Clock clock;
+	sf::Clock clock1;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	while (mWindow.isOpen())
 	{
@@ -262,10 +272,14 @@ void Game::run()
 		while (timeSinceLastUpdate > TimePerFrame)
 		{
 			timeSinceLastUpdate -= TimePerFrame;
-
 			processEvents();
 			if (isWin == false) {
 				update(TimePerFrame);
+			}
+			if(clock1.getElapsedTime().asSeconds() > 0.5f)
+			{
+				KongAnimation();
+				clock1.restart();
 			}
 		}
 		updateStatistics(elapsedTime);
@@ -276,7 +290,7 @@ void Game::run()
 void Game::processEvents()
 {
 	sf::Event event;
-	while (mWindow.pollEvent(event))
+	while (mWindow.pollEvent(event) && isGameOver == false)
 	{
 		switch (event.type)
 		{
@@ -304,7 +318,7 @@ void Game::update(sf::Time elapsedTime)
 	}
 	sf::Vector2f movement(0.f, 0.f);
 	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
-	if(player == NULL || !player->m_enabled)
+	if(player == nullptr || !player->m_enabled)
 	{
 		return;
 	}
@@ -343,7 +357,6 @@ void Game::update(sf::Time elapsedTime)
 	}
 	int LevelMario = getMarioLevel();
 	sf::Vector2f mov = player->m_sprite.getPosition();
-	std::cout << player->m_sprite.getPosition().y << "\n";
 	if (mIsMovingUp && canMoveVertical)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown && canMoveVertical)
@@ -492,6 +505,7 @@ void Game::HandleCollisionPiecePlayer(sf::Time elapsedTime)
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 			if (boundPiece.intersects(boundPlayer) == true)
 			{
+				Sound(mCoinSoundPath);
 				piece->m_enabled = false;
 				// make mario bigger when he make collision with *piece.
 			   // TODO: do this below
@@ -511,7 +525,7 @@ void Game::HandleGameOver()
 {
 	// Game Over ?
 	
-	if (EntityManager::GetPlayer() == NULL)
+	if (EntityManager::GetPlayer() == nullptr)
 	{
 		DisplayGameOver();
 	}
@@ -532,6 +546,7 @@ void Game::DisplayWin()
 
 		mText.setString("Champion!!!");
 		isWin = true;
+		Sound(mWinSoundPath);
 	
 }
 void Game::DisplayGameOver()
@@ -541,9 +556,10 @@ void Game::DisplayGameOver()
 		mText.setFont(mFont);
 		mText.setPosition(200.f, 400.f);
 		mText.setCharacterSize(100);
-
 		mText.setString("GAME OVER");
+		Sound(mDeathSoundPath);
 		isGameOver = true;
+
 	}
 	else
 	{
@@ -568,7 +584,7 @@ void Game::HandleCollisionPrincessePlayer()
 		boundPrincesse = princesse->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		if (EntityManager::GetPlayer() != NULL) {
+		if (EntityManager::GetPlayer() != nullptr) {
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 
 			if (boundPrincesse.intersects(boundPlayer) == true)
@@ -601,17 +617,16 @@ void Game::HandleCollisionBarilPlayer()
 		boundBaril = Baril->m_sprite.getGlobalBounds();
 
 		sf::FloatRect boundPlayer;
-		if (EntityManager::GetPlayer() != NULL) {
+		if (EntityManager::GetPlayer() != nullptr) {
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
-
+			boundPlayer.height -=20;
+			boundPlayer.width -=20;
 			if (boundBaril.intersects(boundPlayer) == true)
 			{
-				//live--;
-				//TODO: d�commenter �a et la ligne 565
-				//score -= 50;
+				live--;
+				score -= 50;
 				Baril->m_enabled = false;
-				//EntityManager::GetPlayer()->m_enabled = false;
-
+				EntityManager::GetPlayer()->m_enabled = false;
 				goto end;
 			}
 		}
@@ -685,10 +700,6 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	sf::Clock clock;
 	sf::Time elapsed1;
-	if (!isPressed)
-	{
-		
-	}
 	if (key == sf::Keyboard::Up) {
 		mIsMovingUp = isPressed;
 		if (moveVertical && isPressed) {
@@ -745,7 +756,7 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 		if (isPressed == false)
 		{
-			mIsJump = false;
+			mIsJump = isPressed;
 			EntityManager::GetPlayer()->m_sprite.setPosition(
 				EntityManager::GetPlayer()->m_sprite.getPosition().x,
 				EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
@@ -754,22 +765,13 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 		}
 
 		if (mIsJump == true) {
-			/*sf::Time elapsed2 = clock.getElapsedTime();
-			if (elapsed1.asSeconds()*2 < elapsed2.asSeconds()) {
-				EntityManager::GetPlayer()->m_sprite.setPosition(
-					EntityManager::GetPlayer()->m_sprite.getPosition().x,
-					EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
-				);
-			}*/
 			return;
 		}
-
-		elapsed1 = clock.getElapsedTime();
-		EntityManager::GetPlayer()->m_sprite.setPosition(
-			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y - 50.f
+		std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+		player->m_sprite.setPosition(
+			player->m_sprite.getPosition().x,
+			player->m_sprite.getPosition().y - 50.f
 		);
-
 		mIsJump = true;
 	}
 }
@@ -801,8 +803,42 @@ int Game::getMarioLevel()
 	{
 		return 5;
 	}
-	else return -1;
-	
+	else return -1;	
+}
+
+void Game::Sound(std::string path)
+{
+	if (mIntroBuffer.loadFromFile(path))
+	{
+		mIntroSound.setBuffer(mIntroBuffer);
+		mIntroSound.play();
+		mIntroSound.setPlayingOffset(sf::seconds(2.f));
+	}
+}
+
+void Game::KongAnimation()
+{
+	std::shared_ptr<Entity> kong = EntityManager::GetKong();
+	if(kong_position == 1)
+	{
+		kong->m_sprite.setTextureRect(sf::IntRect(252, 7, 48, 35));
+		kong_position = 2;
+	}
+	else if(kong_position == 2)
+	{
+		kong->m_sprite.setTextureRect(sf::IntRect(106, 7, 48, 35));
+		kong_position = 3;
+	}	
+	else if(kong_position == 3)
+	{
+		kong->m_sprite.setTextureRect(sf::IntRect(7, 7, 48, 35));
+		kong_position = 4;
+	}
+	else if (kong_position = 4)
+	{
+		kong->m_sprite.setTextureRect(sf::IntRect(156, 7, 48, 35));
+		kong_position = 1;
+	}
 }
 
 

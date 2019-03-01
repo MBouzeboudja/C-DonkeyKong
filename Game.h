@@ -7,6 +7,11 @@
 #define PIECE_COUNT_X 3
 #define PIECE_COUNT_Y 6
 #define MOVE_OFFSET_y 3,7 
+#define mIntroSoundPath "Media/Sounds/intro.wav"
+#define mCoinSoundPath "Media/Sounds/coin.wav"
+#define mDeathSoundPath "Media/Sounds/death.wav"
+#define mWinSoundPath "Media/Sounds/win1.wav"
+
 
 class Game
 {
@@ -34,6 +39,8 @@ private:
 	void HandleCollisionPiecePlayer(sf::Time elapsedTime);
 	void HandlePieceMoves();
 	int  getMarioLevel();
+	void Sound(std::string path);
+	void KongAnimation();
 
 
 private:
@@ -47,7 +54,6 @@ private:
 	sf::Font	mFont;
 	sf::Text	mStatisticsText;
 	sf::Time	mStatisticsUpdateTime;
-
 	sf::Text	mText;
 	sf::Text	mScore;
 	sf::Text	mLive;
@@ -67,6 +73,7 @@ private:
 	bool canMoveVertical;
 	int moveHorizontal;
 	int moveVertical;
+	int kong_position;
 
 
 
@@ -98,6 +105,10 @@ private:
 
 	sf::Texture _TextureBaril;
 	sf::Sprite	_Baril;
-	//sf::Sprite	_Piece;
+	sf::SoundBuffer mIntroBuffer;
+	sf::Sound mIntroSound;
+
+	sf::Texture _TextureBarilStatic;
+	sf::Sprite	_BarilStatic;
 };
 
