@@ -1,4 +1,5 @@
 #pragma once
+#include "SoundHelper.h"
 
 #define ECHELLE_COUNT 5
 #define BLOCK_COUNT_X 8
@@ -7,10 +8,6 @@
 #define PIECE_COUNT_X 3
 #define PIECE_COUNT_Y 6
 #define MOVE_OFFSET_y 3,7 
-#define mIntroSoundPath "Media/Sounds/intro.wav"
-#define mCoinSoundPath "Media/Sounds/coin.wav"
-#define mDeathSoundPath "Media/Sounds/death.wav"
-#define mWinSoundPath "Media/Sounds/win1.wav"
 
 
 class Game
@@ -38,7 +35,6 @@ private:
 	void HandleScoreLive();
 	void HandleCollisionPiecePlayer(sf::Time elapsedTime);
 	void HandlePieceMoves();
-	int  getMarioLevel();
 	void Sound(std::string path);
 	void KongAnimation();
 
@@ -110,5 +106,6 @@ private:
 
 	sf::Texture _TextureBarilStatic;
 	sf::Sprite	_BarilStatic;
+	SoundHelper _sound_helper;
 };
 

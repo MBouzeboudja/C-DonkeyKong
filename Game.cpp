@@ -2,6 +2,8 @@
 #include "StringHelpers.h"
 #include "Game.h"
 #include "EntityManager.h"
+#include "Level.h"
+#include "SoundHelper.h"
 
 const float Game::PlayerSpeed = 80.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
@@ -22,6 +24,7 @@ Game::Game()
 	, moveHorizontal(1)
 	, moveVertical(1)
 	, kong_position(1)
+	, _sound_helper ()
 {
 	mWindow.setFramerateLimit(160);
 	mIsJump = false;
@@ -29,8 +32,8 @@ Game::Game()
 	isGameOver = false;
 	isWin = false;
 	score = 0;
-	// Draw blocks
 
+	// Draw blocks
 	_TextureBlock.loadFromFile("Media/Textures/Block.png");
 	_TextureBlock.setSmooth(true);
 	_sizeBlock = _TextureBlock.getSize();
@@ -235,7 +238,7 @@ Game::Game()
 	mLive.setPosition(20.f, 130.f);
 	mLive.setCharacterSize(20);
 	mLive.setString(std::to_string(live));
-	Sound(mIntroSoundPath);
+	_sound_helper.SoundPlay(mIntroSoundPath);
 
 }
 
@@ -355,13 +358,13 @@ void Game::update(sf::Time elapsedTime)
 			}
 		}
 	}
-	int LevelMario = getMarioLevel();
+	int LevelMario = Level::getMarioLevel();
 	sf::Vector2f mov = player->m_sprite.getPosition();
 	if (mIsMovingUp && canMoveVertical)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown && canMoveVertical)
 		movement.y += PlayerSpeed;
-	if (mIsMovingLeft && getMarioLevel() != -1) {
+	if (mIsMovingLeft && Level::getMarioLevel() != -1) {
 		movement.x -= PlayerSpeed;
 		if (LevelMario > 0 ) {
 			if(LevelMario % 2 == 0)
@@ -374,7 +377,7 @@ void Game::update(sf::Time elapsedTime)
 			}
 		}
 	}
-	if (mIsMovingRight && getMarioLevel() != -1) {
+	if (mIsMovingRight && Level::getMarioLevel() != -1) {
 		movement.x += PlayerSpeed;
 		if (LevelMario > 0) {
 			if (LevelMario % 2 == 0)
@@ -505,7 +508,7 @@ void Game::HandleCollisionPiecePlayer(sf::Time elapsedTime)
 			boundPlayer = EntityManager::GetPlayer()->m_sprite.getGlobalBounds();
 			if (boundPiece.intersects(boundPlayer) == true)
 			{
-				Sound(mCoinSoundPath);
+				_sound_helper.SoundPlay(mCoinSoundPath);
 				piece->m_enabled = false;
 				// make mario bigger when he make collision with *piece.
 			   // TODO: do this below
@@ -546,7 +549,7 @@ void Game::DisplayWin()
 
 		mText.setString("Champion!!!");
 		isWin = true;
-		Sound(mWinSoundPath);
+		_sound_helper.SoundPlay(mWinSoundPath);
 	
 }
 void Game::DisplayGameOver()
@@ -557,7 +560,7 @@ void Game::DisplayGameOver()
 		mText.setPosition(200.f, 400.f);
 		mText.setCharacterSize(100);
 		mText.setString("GAME OVER");
-		Sound(mDeathSoundPath);
+		_sound_helper.SoundPlay(mDeathSoundPath);
 		isGameOver = true;
 
 	}
@@ -700,119 +703,84 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	sf::Clock clock;
 	sf::Time elapsed1;
-	if (key == sf::Keyboard::Up) {
-		mIsMovingUp = isPressed;
-		if (moveVertical && isPressed) {
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
-			moveVertical = 0;
+	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+	if (player != nullptr) {
+		if (key == sf::Keyboard::Up) {
+			mIsMovingUp = isPressed;
+			if (moveVertical && isPressed) {
+				player->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
+				moveVertical = 0;
+			}
+			else
+			{
+				player->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
+				moveVertical = 1;
+			}
+			return;
 		}
-		else
-		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
-			moveVertical = 1;
+		else if (key == sf::Keyboard::Down) {
+			mIsMovingDown = isPressed;
+			if (moveVertical  && isPressed) {
+				player->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
+				moveVertical = 0;
+			}
+			else
+			{
+				player->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
+				moveVertical = 1;
+			}
+			return;
 		}
-		return;
-	}
-	else if (key == sf::Keyboard::Down) {
-		mIsMovingDown = isPressed;
-		if (moveVertical  && isPressed) {
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 40, 16, 16));
-			moveVertical = 0;
+		else if (key == sf::Keyboard::Left) {
+			mIsMovingLeft = isPressed;
+			if (moveHorizontal && isPressed) {
+				player->m_sprite.setTextureRect(sf::IntRect(80, 0, 16, 16));
+				moveHorizontal = 0;
+			}
+			else
+			{
+				player->m_sprite.setTextureRect(sf::IntRect(120, 0, 16, 16));
+				moveHorizontal = 1;
+			}
+			return;
 		}
-		else
-		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(121, 40, 16, 16));
-			moveVertical = 1;
-		}
-		return;
-	}
-	else if (key == sf::Keyboard::Left) {
-		mIsMovingLeft = isPressed;
-		if (moveHorizontal && isPressed) {
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(80, 0, 16, 16));
-			moveHorizontal = 0;
-		}else
-		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(120, 0, 16, 16));
-			moveHorizontal = 1;
-		}
-		return;
-	}
-	else if (key == sf::Keyboard::Right) {
-		mIsMovingRight = isPressed;
-		if (moveHorizontal && isPressed) {
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(200, 0, 16, 16));
-			moveHorizontal = 0;
-		}
-		else
-		{
-			EntityManager::GetPlayer()->m_sprite.setTextureRect(sf::IntRect(160, 0, 16, 16));
-			moveHorizontal = 1;
-		}
-		return;
-	}
+		else if (key == sf::Keyboard::Right) {
+			mIsMovingRight = isPressed;
+			if (moveHorizontal && isPressed) {
+				player->m_sprite.setTextureRect(sf::IntRect(200, 0, 16, 16));
+				moveHorizontal = 0;
+			}
+			else
+			{
 
-	else if (key == sf::Keyboard::Space) {
+				player->m_sprite.setTextureRect(sf::IntRect(160, 0, 16, 16));
+				moveHorizontal = 1;
+			}
+			return;
+		}
 
-		if (isPressed == false)
-		{
-			mIsJump = isPressed;
-			EntityManager::GetPlayer()->m_sprite.setPosition(
-				EntityManager::GetPlayer()->m_sprite.getPosition().x,
-				EntityManager::GetPlayer()->m_sprite.getPosition().y + 50.f
+		else if (key == sf::Keyboard::Space) {
+
+			if (isPressed == false)
+			{
+				mIsJump = isPressed;
+				EntityManager::GetPlayer()->m_sprite.setPosition(
+					player->m_sprite.getPosition().x,
+					player->m_sprite.getPosition().y + 50.f
+				);
+				return;
+			}
+
+			if (mIsJump == true) {
+				return;
+			}
+			std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+			player->m_sprite.setPosition(
+				player->m_sprite.getPosition().x,
+				player->m_sprite.getPosition().y - 50.f
 			);
-			return;
+			mIsJump = true;
 		}
-
-		if (mIsJump == true) {
-			return;
-		}
-		std::shared_ptr<Entity> player = EntityManager::GetPlayer();
-		player->m_sprite.setPosition(
-			player->m_sprite.getPosition().x,
-			player->m_sprite.getPosition().y - 50.f
-		);
-		mIsJump = true;
-	}
-}
-
-int Game::getMarioLevel()
-{
-	float positionY = EntityManager::GetPlayer()->m_sprite.getPosition().y;
-	if(positionY < 100)
-	{
-		return 0;
-	}
-	if(positionY < 185 && positionY > 163)
-	{
-		return 1;
-	}
-	else if(positionY < 325 && positionY > 265)
-	{
-		return 2;
-	}
-	else if (positionY < 410 && positionY > 37)
-	{
-		return 3;
-	}
-	else if (positionY < 520 && positionY > 487)
-	{
-		return 4;
-	}
-	else if (positionY < 630 && positionY > 597)
-	{
-		return 5;
-	}
-	else return -1;	
-}
-
-void Game::Sound(std::string path)
-{
-	if (mIntroBuffer.loadFromFile(path))
-	{
-		mIntroSound.setBuffer(mIntroBuffer);
-		mIntroSound.play();
-		mIntroSound.setPlayingOffset(sf::seconds(2.f));
 	}
 }
 
